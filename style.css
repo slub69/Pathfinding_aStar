@@ -1,0 +1,26 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.wrapper{
+    margin-left: 20%;
+    margin-top: 2em;
+    display: block;
+}
+.row1{
+    list-style: none;
+    display: inline-block;
+}
+.node{
+    background:#ccc;
+      cursor:pointer;
+      -webkit-transition:all 1.5s ease;
+        -moz-transition:all 1.5s ease; 
+        -o-transition:all 1.5s ease; 
+        transition:all 1.5s ease;
+    
+}
+ul {
+    list-style:none;
+    display:inline-block;
+    }
