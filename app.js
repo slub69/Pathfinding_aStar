@@ -68,3 +68,119 @@ function createWorld(){
    //once a random start has been found
    redraw()//continue to next function
 }
+
+function redraw(){
+    if(!referenceSheetloaded){ //if the reference sheet did not load then break otherwise cannot draw
+        return
+    }
+    console.log('Drawing World...')
+    let imageNum = 0
+    ctx.fillStyle = '#000000'//set the world to be a white screen
+    ctx.fillRect(0,0,canvas.width,canvas.height)//clear the "math world" and set the array to be 0 again
+    for(x = 0;x<worldWidth;x++){
+        for(y=0;y<worldHeight;y++){
+            switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
+                    case 1:
+                        spriteNum = 1; //the sprite num will be used throughout to pull the images from the reference image
+                        break;
+                    default:
+                        spriteNum = 0;
+                        break;
+            }
+            ctx.drawImage(spritesheet,
+                spriteNum*tileWidth, 0,
+                tileWidth, tileHeight,
+                x*tileWidth, y*tileHeight,
+                tileWidth, tileHeight)
+            // ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
+        }//at this point the world has been drawn using the reference img
+    }
+    //now we will add an option to draw the path
+    for(rp=0;rp<currentPath.length;rpp++){//add button for this function
+        if(rp===0){
+            spriteNum = 2 //start tile
+            break
+        } else if(rp===currentPath.length-1){
+            spriteNum = 3 //end tile
+        } else{
+            spriteNum = 4 //path tile
+            break
+        }
+/*      switch(rp) this is same as above if else but using switch
+		{
+		case 0:
+			spriteNum = 2; // start
+			break;
+		case currentPath.length-1:
+			spriteNum = 3; // end
+			break;
+		default:
+			spriteNum = 4; // path node
+			break;
+		} */
+        ctx.drawImage(spritesheet,//draws the path on top of the img
+            spriteNum*tileWidth, 0,
+            tileWidth, tileHeight,
+            currentPath[rp][0]*tileWidth,
+            currentPath[rp][1]*tileHeight,
+            tileWidth, tileHeight)
+    }
+}
+//add function here to deal with using interactions (click events)
+
+
+function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding alogrithm
+    let maxWalkableTileNum = 0 //since the world is represented by a bunch of 0 anything higher than 0 is block
+
+    let worldWidth = world[0].length //the mathematical width of the world is the length of the internal array which represents the x axis
+    let worldHeight = world.length//the mathematical height of the world is the length of the world array which is the same as the y axis
+    let worldSize = worldWidth * worldHeight //area of the world
+    //the mathematical representation of the world is now also defined
+
+    let distanceFunction = Distance// default rules are no diagonals (code name: Manhattan)
+    let findNeighbours = NeighboursFree //create a neighbor search function that will be define later
+
+    //now we will define all of the different rule sets using math
+
+	function Distance(Point, Goal)
+	{	// diagonals are considered a little farther than cardinal directions
+		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
+		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
+		return Math.sqrt(Math.pow(Point.x - Goal.x, 2) + Math.pow(Point.y - Goal.y, 2));
+	}}
+    function NeighboursFree(tileNorth, tileSouth, tileEast, tileWest, North, South, East, West, result){
+        tileNorth = North > -1 //???
+        tileSouth = South < worldHeight
+        tileEast = East < worldWidth
+        tileWest = West > -1
+        if(tileEast){
+            if(tileNorth & canWalkHere(East, North)){
+                result.push({x:East, y:North})
+            } else if(tileSouth & canWalkHere(East, South)){
+                result.push({x:East, y:South})
+            }
+        } else if(tileWest){
+            if(tileNorth & canWalkHere(West, North)){
+                result.push({x:West, y:North})
+            } else if(tileSouth & canWalkHere(West, South)){
+                result.push({x:West, y:South})
+            }
+        }
+    }
+    function canWalkHere(x,y){
+        return(
+                (world[x] != null) //if the x coord is not empty
+                & (world[x][y] != null) //if the y coord is not empty
+                & (world[x][y] <= maxWalkableTileNum)//if the y coord is within the world
+        )
+    }
+    function Node(Parent, Point){//function to define the values that each node holds (in relation to itself and its parent) this way we can do the aStar
+        let newNode = { // represents the node as a set of values in an array
+            Parent:Parent, //Parent node is parent of the nodes data 
+            value:Point.x + (Point.y * worldWidth), //gives the node a value so that it can be evaluted for the path
+            x:Point.x,//gives the point its coords
+            y:Point.y,
+            f:0,//the value that will be used to caluclate distance (the math behind this value and what it repersents will be define later)
+            g:0
+        }
+    }
