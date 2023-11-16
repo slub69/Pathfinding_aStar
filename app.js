@@ -81,14 +81,14 @@ function redraw(){
         for(y=0;y<worldHeight;y++){
             switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
                     case 1:
-                        spriteNum = 1; //the sprite num will be used throughout to pull the images from the reference image
+                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
                         break;
                     default:
-                        spriteNum = 0;
+                        imageNum = 0;
                         break;
             }
             ctx.drawImage(spritesheet,
-                spriteNum*tileWidth, 0,
+                imageNum*tileWidth, 0,
                 tileWidth, tileHeight,
                 x*tileWidth, y*tileHeight,
                 tileWidth, tileHeight)
@@ -96,30 +96,30 @@ function redraw(){
         }//at this point the world has been drawn using the reference img
     }
     //now we will add an option to draw the path
-    for(rp=0;rp<currentPath.length;rpp++){//add button for this function
+    for(rp=0;rp<currentPath.length;rp++){//add button for this function
         if(rp===0){
-            spriteNum = 2 //start tile
+            imageNum = 2 //start tile
             break
         } else if(rp===currentPath.length-1){
-            spriteNum = 3 //end tile
+            imageNum = 3 //end tile
         } else{
-            spriteNum = 4 //path tile
+            imageNum = 4 //path tile
             break
         }
 /*      switch(rp) this is same as above if else but using switch
 		{
 		case 0:
-			spriteNum = 2; // start
+			imageNum = 2; // start
 			break;
 		case currentPath.length-1:
-			spriteNum = 3; // end
+			imageNum = 3; // end
 			break;
 		default:
-			spriteNum = 4; // path node
+			imageNum = 4; // path node
 			break;
 		} */
         ctx.drawImage(spritesheet,//draws the path on top of the img
-            spriteNum*tileWidth, 0,
+            imageNum*tileWidth, 0,
             tileWidth, tileHeight,
             currentPath[rp][0]*tileWidth,
             currentPath[rp][1]*tileHeight,
@@ -147,7 +147,7 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
 		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
 		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
 		return Math.sqrt(Math.pow(Point.x - Goal.x, 2) + Math.pow(Point.y - Goal.y, 2));
-	}}
+	}
     function NeighboursFree(tileNorth, tileSouth, tileEast, tileWest, North, South, East, West, result){
         tileNorth = North > -1 //???
         tileSouth = South < worldHeight
@@ -180,7 +180,67 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
             value:Point.x + (Point.y * worldWidth), //gives the node a value so that it can be evaluted for the path
             x:Point.x,//gives the point its coords
             y:Point.y,
-            f:0,//the value that will be used to caluclate distance (the math behind this value and what it repersents will be define later)
-            g:0
+            f:0,//distance to destination node
+            //^the value that will be used to caluclate distance (the math behind this value and what it repersents will be define later)
+            g:0//the distance from the starting point
         }
+        return newNode
     }
+    function calculatePath(){
+        let tilePathStart = Node(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
+        let tilePathEnd = Node(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
+
+        let aStarWorld = new Array(worldSize) // creates an array the size of the world (conatins all nodes in the world)
+
+        let Open = [tilePathStart] //Set of open tiles starts the start tile
+
+        let Closed = []//the list of known closed tiles starts empty
+
+        let result = []//final output array
+
+        let tileNeighbours//creates a variable to the tile neighbours will be defined later as search is done and neighbours are found
+
+        let startNode
+        let Path
+
+        let length, max, min, i, j
+
+        while(length = Open.length){//iterate trhough the list of known open tiles
+            max = worldSize
+            min = -1
+            for(i=0;i<length;i++){
+                if(Open[i].f < max){
+                    max = Open[i].f
+                    min = i
+                }
+            }
+
+            Node = Open.splice(min, 1)[0]//defines knew node as node with lowest cost value (f)
+            if(Node.value === tilePathEnd.value){//check if destination has been reached
+                Path = Closed[Closed.push(Node) - 1]
+                while(Path = Path.parent){
+                    result.push([Path.x,Path.y])
+                }
+                aStarWorld = Closed = Open = []//clear the working arrays
+                result.reverse()//return start to finsih no finsih to start
+            }else{ //destination has not been reached
+                tileNeighbours = NeighboursFree(Node.x,Node.y)
+                for(i=0,j=tileNeighbours.length;i<j;i++){//loop through length of neighbours array (check every neighbour)
+                    Path = Node(Node,Neighbours[i])
+                    if(!aStarWorld[Path.value]){
+                    Path.g = Node.g + distanceFunction(Neighbours[i],Node)//current cost of current route
+                    
+                    Path.f = Path.g + distanceFunction(Neighbours[i],tilePathEnd)//check cost of entire path
+
+                    Open.push(Path)//add the path to open to test
+
+                    aStarWorld[Path.value] = true //mark this path as already having been visited
+                    }
+                }
+                Closed.push(Node)//add this node to be used in another potentially better path
+            }
+        }//keep working until entire open list is empty
+        return result
+    }
+    return calculatePath()
+}//Path has been found
