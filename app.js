@@ -1,3 +1,9 @@
+const DOMselectors = {
+    runSearch: document.getElementById('run_btn'),
+    randomizeWorld: document.getElementById('random_btn'),
+
+}
+//start by defining all global variables as empty
 let canvas = null //define world, call it canvas
 let ctx = null //??
 let referenceSheet = null //call in reference for images
@@ -41,6 +47,14 @@ function createWorld(){
         for(y=0;y<worldHeight;y++){//same thing as for world width but now for height so the world is 2d
         world[x][y] = 0 // set the array inside the array to be empty
         }
+    }
+    function randomizeWorld(){
+        for (var x=0; x < worldWidth; x++){
+		    for (var y=0; y < worldHeight; y++){
+			    if (Math.random() > 0.75)
+			    world[x][y] = 1;
+		    }
+	    }
     }
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
     /* 
@@ -244,3 +258,8 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
     }
     return calculatePath()
 }//Path has been found
+
+
+DOMselectors.randomizeWorld.addEventListener('click', function(){
+    console.log('Generating world... \n')
+})
