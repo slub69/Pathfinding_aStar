@@ -3,13 +3,6 @@ margin:0;
 padding:0;
 }
 
-.wrapper {
-margin-left:2%; 
-margin-right:2%; 
-margin-top:2em;
-margin-bottom:2em;
-  display:block;
-}
 
 .UI{
     margin: 2%;
@@ -20,18 +13,17 @@ margin-bottom:2em;
 .interaction{
     margin: 1.5em;
 }
-ul {
-list-style:none;
-display:inline-block;
+.game{
+    justify-content: center;
 }
+#title{
+    align-content: center;
+    margin: 2%;
+    font-size: 2.5em;
+}
+#title2{
+    margin: 1%;
+    margin-left: 2%;
+    display: flex;
 
-.dot,
-ul li {
-width:2em;
-height:2em;
-margin:5px;
 }
-.dot {
-background:#ccc;
-border-radius:0%;    
-    }

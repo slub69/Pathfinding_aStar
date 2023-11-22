@@ -7,9 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <title>Welcome to my Pathfinding test, please draw your map and select your points or randomize the world</title>
     <div class="main_container">
+      <p id="title">Welcome to my Pathfinding test</p>
+      <h2 id="title2">Draw your map and select your points or randomize the world</h2>        
         <div class="UI">
+          <div class='interaction ' id="initialWorld">
+            <button type="button" id="start_btn" name="cursor_settings">Start World</button>
+          </div>
             <div class='interaction ' id="Origin">
                 <input type="radio" id="Origin" name="cursor_settings" value="start" />
                 <label for="Origin">Origin Point</label>
@@ -22,14 +26,14 @@
                 <input type="radio" id="Barrier" name="cursor_settings" value="barrier" />
                 <label for="Barrier">Barrier</label>
               </div>
-              <div class='interaction ' id="run_search">
-                <button type="button" id="run_btn" name="cursor_settings" id="run_btn">Run Search</button>
-            </div>
-            <div class="interaction" id="random_btn">
+              <div class="interaction" id="random_btn">
                 <button type="button" id="random_btn" name="cursor_settings" id="random_btn">Randomize World</button>
-            </div>
-              </div>            
-        <div class="gameWorld">
+              </div>
+              <div class='interaction ' id="run_search">
+                <button type="button" id="run_btn" name="cursor_settings">Run Search</button>
+              </div>
+          </div>            
+        <div class="game">
             <canvas id="gameWorld"></canvas>
         </div>
     </div>

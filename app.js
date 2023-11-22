@@ -1,14 +1,16 @@
 const DOMselectors = {
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
+    startWorld: document.getElementById('start_btn'),
 
 }
+
 //start by defining all global variables as empty
 let canvas = null //define world, call it canvas
 let ctx = null //??
 let referenceSheet = null //call in reference for images
 let referenceSheetloaded = false //set a variable to give the status of the reference image
-let worldArray = [[]] //generate a 2d array for the world
+let world = [[]] //generate a 2d array for the world
 
 //size of world in units of tiles
 let worldWidth = 16
@@ -22,18 +24,30 @@ let tileHeight = 32
 let pathStart = [worldWidth,worldHeight]
 let pathEnd = [0,0]
 let currentPath = []
-
+function DOMNode(Parent, Point){//function to define the values that each node holds (in relation to itself and its parent) this way we can do the aStar
+    console.log(Point)
+    let newNode = { // represents the node as a set of values in an array
+        Parent:Parent, //Parent node is parent of the nodes data 
+        value: Point.x + (Point.y * worldWidth), //gives the node a value so that it can be evaluted for the path
+        x:Point.x,//gives the point its coords
+        y:Point.y,
+        f:0,//distance to destination node
+        //^the value that will be used to caluclate distance (the math behind this value and what it repersents will be define later)
+        g:0//the distance from the starting point
+    }
+    return newNode
+}
 // ^^^ all variables have been defined now html page is run
 
 function onload(){
-    console.log('Connected...\n\n') //show that the javascript and html is connected
+    console.log('Starting Program...\n')    //show that the javascript and html is connected
     canvas = document.getElementById('gameWorld') //pull canvas from html
     canvas.width = worldWidth * tileWidth //make the world as big as the number of piles in pixels
     canvas.height = worldHeight * tileHeight //same as above but for height
     canvas.addEventListener('click', canvasClick, false)//???
     referenceSheet = new Image() //define reference sheet as an image
     referenceSheet.src = 'reference_images.png'//set reference sheet to the image file provided
-    referenceSheet.onload = loaded //???
+    referenceSheet.onload = loaded //let the program know that the reference sheet has been found and connected
 }
 function loaded(){//function that lets user and code know that the image has been linked
     console.log('Images have been loaded.')
@@ -141,9 +155,37 @@ function redraw(){
     }
 }
 //add function here to deal with using interactions (click events)
+function canvasClick(e){
+    let x
+    let y
+    if(e.pageX != undefined && e.pageY != undefined){//check if html page coords are real and then find them
+        x = e.pageX
+        y = e.pageY
+    }else{ //if html coords are undefined scroll to where they are defined
+        x = e.clientX + document.body.scrollLeft +
+        document.documentElement.scrollLeft
+
+        y = e.clientY + document.body.scrollTop +
+        document.documentElement.scrollTop
+    }
+    x -= canvas.offsetLeft //make the coords relative to the canvas 
+    y -= canvas.offsetTop
+
+    let cell = //find the coords in the canvas that we clicked
+    [
+        Math.floor(x/tileWidth),
+        Math.floor(y/tileHeight)
+    ]
+    console.log('Tile clicked was ' + cell[0]+' , '+cell[1])
+
+    pathStart = pathEnd
+    pathEnd = cell
+    currentPath = findPath(world,pathStart,pathEnd)
+    redraw()
+}
 
 
-function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding alogrithm
+function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding alogrithm
     let maxWalkableTileNum = 0 //since the world is represented by a bunch of 0 anything higher than 0 is block
 
     let worldWidth = world[0].length //the mathematical width of the world is the length of the internal array which represents the x axis
@@ -152,7 +194,6 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
     //the mathematical representation of the world is now also defined
 
     let distanceFunction = Distance// default rules are no diagonals (code name: Manhattan)
-    let findNeighbours = NeighboursFree //create a neighbor search function that will be define later
 
     //now we will define all of the different rule sets using math
 
@@ -161,6 +202,28 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
 		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
 		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
 		return Math.sqrt(Math.pow(Point.x - Goal.x, 2) + Math.pow(Point.y - Goal.y, 2));
+	}
+    function Neighbours(x, y)
+	{
+		let	N = y - 1,
+		S = y + 1,
+		E = x + 1,
+		W = x - 1,
+		myN = N > -1 && canWalkHere(x, N),
+		myS = S < worldHeight && canWalkHere(x, S),
+		myE = E < worldWidth && canWalkHere(E, y),
+		myW = W > -1 && canWalkHere(W, y),
+		result = [];
+		if(myN)
+		result.push({x:x, y:N});
+		if(myE)
+		result.push({x:E, y:y});
+		if(myS)
+		result.push({x:x, y:S});
+		if(myW)
+		result.push({x:W, y:y});
+		NeighboursFree(myN, myS, myE, myW, N, S, E, W, result);
+		return result;
 	}
     function NeighboursFree(tileNorth, tileSouth, tileEast, tileWest, North, South, East, West, result){
         tileNorth = North > -1 //???
@@ -188,21 +251,10 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
                 & (world[x][y] <= maxWalkableTileNum)//if the y coord is within the world
         )
     }
-    function Node(Parent, Point){//function to define the values that each node holds (in relation to itself and its parent) this way we can do the aStar
-        let newNode = { // represents the node as a set of values in an array
-            Parent:Parent, //Parent node is parent of the nodes data 
-            value:Point.x + (Point.y * worldWidth), //gives the node a value so that it can be evaluted for the path
-            x:Point.x,//gives the point its coords
-            y:Point.y,
-            f:0,//distance to destination node
-            //^the value that will be used to caluclate distance (the math behind this value and what it repersents will be define later)
-            g:0//the distance from the starting point
-        }
-        return newNode
-    }
+    
     function calculatePath(){
-        let tilePathStart = Node(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
-        let tilePathEnd = Node(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
+        let tilePathStart = DOMNode(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
+        let tilePathEnd = DOMNode(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
 
         let aStarWorld = new Array(worldSize) // creates an array the size of the world (conatins all nodes in the world)
 
@@ -214,7 +266,7 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
 
         let tileNeighbours//creates a variable to the tile neighbours will be defined later as search is done and neighbours are found
 
-        let startNode
+        let myNode
         let Path
 
         let length, max, min, i, j
@@ -229,20 +281,20 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
                 }
             }
 
-            Node = Open.splice(min, 1)[0]//defines knew node as node with lowest cost value (f)
-            if(Node.value === tilePathEnd.value){//check if destination has been reached
-                Path = Closed[Closed.push(Node) - 1]
+            myNode = Open.splice(min, 1)[0]//defines knew node as node with lowest cost value (f)
+            if(myNode.value === tilePathEnd.value){//check if destination has been reached
+                Path = Closed[Closed.push(myNode) - 1]
                 while(Path = Path.parent){
                     result.push([Path.x,Path.y])
                 }
                 aStarWorld = Closed = Open = []//clear the working arrays
                 result.reverse()//return start to finsih no finsih to start
             }else{ //destination has not been reached
-                tileNeighbours = NeighboursFree(Node.x,Node.y)
+                tileNeighbours = Neighbours(myNode.x,myNode.y)
                 for(i=0,j=tileNeighbours.length;i<j;i++){//loop through length of neighbours array (check every neighbour)
-                    Path = Node(Node,Neighbours[i])
+                    Path = DOMNode(myNode,Neighbours[i])
                     if(!aStarWorld[Path.value]){
-                    Path.g = Node.g + distanceFunction(Neighbours[i],Node)//current cost of current route
+                    Path.g = myNode.g + distanceFunction(Neighbours[i],myNode)//current cost of current route
                     
                     Path.f = Path.g + distanceFunction(Neighbours[i],tilePathEnd)//check cost of entire path
 
@@ -251,7 +303,7 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
                     aStarWorld[Path.value] = true //mark this path as already having been visited
                     }
                 }
-                Closed.push(Node)//add this node to be used in another potentially better path
+                Closed.push(myNode)//add this node to be used in another potentially better path
             }
         }//keep working until entire open list is empty
         return result
@@ -263,3 +315,4 @@ function aStar(world, pathStart, pathEnd){//writing the actual a* pathfinding al
 DOMselectors.randomizeWorld.addEventListener('click', function(){
     console.log('Generating world... \n')
 })
+DOMselectors.startWorld.addEventListener('click', function(){onload()})
