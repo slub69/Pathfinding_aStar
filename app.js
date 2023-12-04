@@ -24,20 +24,7 @@ let tileHeight = 32
 let pathStart = [worldWidth,worldHeight]
 let pathEnd = [0,0]
 let currentPath = []
-function DOMNode(Parent, Point){//function to define the values that each node holds (in relation to itself and its parent) this way we can do the aStar
-    console.log(Point)
-    let newNode = { // represents the node as a set of values in an array
-        Parent:Parent, //Parent node is parent of the nodes data 
-        value: Point.x + (Point.y * worldWidth), //gives the node a value so that it can be evaluted for the path
-        x:Point.x,//gives the point its coords
-        y:Point.y,
-        f:0,//distance to destination node
-        //^the value that will be used to caluclate distance (the math behind this value and what it repersents will be define later)
-        g:0//the distance from the starting point
-    }
-    return newNode
-}
-// ^^^ all variables have been defined now html page is run
+
 
 function onload(){
     console.log('Starting Program...\n')    //show that the javascript and html is connected
@@ -62,14 +49,12 @@ function createWorld(){
         world[x][y] = 0 // set the array inside the array to be empty
         }
     }
-    function randomizeWorld(){
-        for (var x=0; x < worldWidth; x++){
+    for (var x=0; x < worldWidth; x++){
 		    for (var y=0; y < worldHeight; y++){
 			    if (Math.random() > 0.75)
 			    world[x][y] = 1;
 		    }
 	    }
-    }
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
     /* 
     add random button 
@@ -123,6 +108,7 @@ function redraw(){
             // ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
         }//at this point the world has been drawn using the reference img
     }
+    console.log('Path length: ' + currentPath)
     //now we will add an option to draw the path
     for(rp=0;rp<currentPath.length;rp++){//add button for this function
         if(rp===0){
@@ -193,16 +179,16 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
     let worldSize = worldWidth * worldHeight //area of the world
     //the mathematical representation of the world is now also defined
 
-    let distanceFunction = Distance// default rules are no diagonals (code name: Manhattan)
 
     //now we will define all of the different rule sets using math
 
-	function Distance(Point, Goal)
+	function distanceFunction(Point, Goal)
 	{	// diagonals are considered a little farther than cardinal directions
 		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
 		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
 		return Math.sqrt(Math.pow(Point.x - Goal.x, 2) + Math.pow(Point.y - Goal.y, 2));
 	}
+    let findNeighbours = NeighboursFree
     function Neighbours(x, y)
 	{
 		let	N = y - 1,
@@ -222,7 +208,7 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
 		result.push({x:x, y:S});
 		if(myW)
 		result.push({x:W, y:y});
-		NeighboursFree(myN, myS, myE, myW, N, S, E, W, result);
+		findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
 		return result;
 	}
     function NeighboursFree(tileNorth, tileSouth, tileEast, tileWest, North, South, East, West, result){
@@ -252,9 +238,30 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
         )
     }
     
+    function Node(Parent, Point){
+        var newNode = {
+			// pointer to another Node object
+			Parent:Parent,
+			// array index of this Node in the world linear array
+			value:Point.x + (Point.y * worldWidth),
+			// the location coordinates of this Node
+			x:Point.x,
+			y:Point.y,
+			// the heuristic estimated cost
+			// of an entire path using this node
+			f:0,
+			// the distanceFunction cost to get
+			// from the starting point to this node
+			g:0
+		};
+
+		return newNode;
+    }
+
     function calculatePath(){
-        let tilePathStart = DOMNode(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
-        let tilePathEnd = DOMNode(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
+        console.log(pathStart)
+        let tilePathStart = Node(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
+        let tilePathEnd = Node(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
 
         let aStarWorld = new Array(worldSize) // creates an array the size of the world (conatins all nodes in the world)
 
@@ -292,11 +299,11 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
             }else{ //destination has not been reached
                 tileNeighbours = Neighbours(myNode.x,myNode.y)
                 for(i=0,j=tileNeighbours.length;i<j;i++){//loop through length of neighbours array (check every neighbour)
-                    Path = DOMNode(myNode,Neighbours[i])
+                    Path = Node(myNode,tileNeighbours[i])
                     if(!aStarWorld[Path.value]){
-                    Path.g = myNode.g + distanceFunction(Neighbours[i],myNode)//current cost of current route
+                    Path.g = myNode.g + distanceFunction(tileNeighbours[i],myNode)//current cost of current route
                     
-                    Path.f = Path.g + distanceFunction(Neighbours[i],tilePathEnd)//check cost of entire path
+                    Path.f = Path.g + distanceFunction(tileNeighbours[i],tilePathEnd)//check cost of entire path
 
                     Open.push(Path)//add the path to open to test
 
