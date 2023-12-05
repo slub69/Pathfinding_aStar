@@ -14,7 +14,8 @@ padding:0;
     margin: 1.5em;
 }
 .game{
-    justify-content: center;
+    justify-items: center;
+    margin: 2%;
 }
 #title{
     align-content: center;
@@ -25,5 +26,4 @@ padding:0;
     margin: 1%;
     margin-left: 2%;
     display: flex;
-
 }
