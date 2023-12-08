@@ -18,7 +18,7 @@ let referenceSheet = null //call in reference for images
 let referenceSheetloaded = false //set a variable to give the status of the reference image
 let world = [[]] //generate a 2d array for the world
 
-let custom = false //globalize variable for custom world or nah (originially used for start up but not used anymore)
+let create = null //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
 
 //size of world in units of tiles
@@ -60,7 +60,6 @@ function loaded(){//function that lets user and code know that the image has bee
 }
 function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
-    console.log(custom)
     for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
             world[x] = []//set each element of world to be empty (creates an empty world)
             for(y=0;y<worldHeight;y++){//same thing as for world width but now for height so the world is 2d
@@ -75,18 +74,6 @@ function createWorld(){
 	    }
 
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
-    /* 
-    add random button 
-
-    for (var x=0; x < worldWidth; x++)
-	{
-		for (var y=0; y < worldHeight; y++)
-		{
-			if (Math.random() > 0.75)
-			world[x][y] = 1;
-		}
-	}
-    */
    generate()
    //start to find an intial path
    
@@ -107,26 +94,17 @@ function createWorld(){
  */
 
 }
-
 function generate(){
     if(!referenceSheetloaded){ //if the reference sheet did not load then break otherwise cannot draw
         return
     }
     console.log('Drawing World...')
     let imageNum = 0
-    ctx.fillStyle = '#c4c4c4'//set the world to be a white screen
+    ctx.fillStyle = '#000000'//set the world to be a black screen
     ctx.fillRect(0,0,canvas.width,canvas.height)//clear the "math world" and set the array to be 0 again
     for(x = 0;x<worldWidth;x++){
         for(y=0;y<worldHeight;y++){
-            if(custom===false){
-                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
-                    case 1:
-                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
-                        break;
-                    default:
-                        imageNum = 0;
-                        break;
-            }} else if(custom===true){
+            if(create===false){
                 switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
                     case 1:
                         imageNum = 0; //the sprite num will be used throughout to pull the images from the reference image
@@ -134,7 +112,15 @@ function generate(){
                     default:
                         imageNum = 0;
                         break;
-            }
+            }} else if(create===true){
+                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
+                    case 1:
+                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
+                        break;
+                    default:
+                        imageNum = 0;
+                        break;
+            }}
             ctx.drawImage(referenceSheet,
                 imageNum*tileWidth, 0,
                 tileWidth, tileHeight,
@@ -144,14 +130,15 @@ function generate(){
         }//at this point the world has been drawn using the reference img
     }
 }
-}
+
 function generatePath(){
     currentPath = [] //clear current path incase rerun
-    console.log('0 = ' + currentPath.length)
+    console.log('Path length= ' + currentPath.length)
     //while(currentPath.length === 0){ //randomly generate a start
     pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
 	pathEnd = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	if (world[pathStart[0]][pathStart[1]] == 0){//in the event that the start and end are right next to each other than the solution has been found
+	console.log(pathStart + ' ' + pathEnd)
+    if (world[pathStart[0]][pathStart[1]] == 0){//in the event that the start and end are right next to each other than the solution has been found
 		currentPath = findPath(world,pathStart,pathEnd);
 	}
     console.log('Path length: ' + currentPath)
@@ -252,11 +239,11 @@ function generatePath(){
 } */
 //add function here to deal with using interactions (click events)
 function canvasClick(e){
-    let x
-    let y
+    let x,y
     if(e.pageX != undefined && e.pageY != undefined){//check if html page coords are real and then find them
         x = e.pageX
         y = e.pageY
+        console.log('click coords = ' + x + y)
     }else{ //if html coords are undefined scroll to where they are defined
         x = e.clientX + document.body.scrollLeft +
         document.documentElement.scrollLeft
@@ -277,7 +264,7 @@ function canvasClick(e){
     pathStart = pathEnd
     pathEnd = cell
     currentPath = findPath(world,pathStart,pathEnd)
-    redraw()
+    generatePath()
 }
 
 
@@ -286,7 +273,7 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
 	let	sqrt = Math.sqrt
 
     
-    let maxWalkableTileNum = 0 //since the world is represented by a bunch of 0 anything higher than 0 is block
+    let WalkableTileNum = 0 //since the world is represented by a bunch of 0 anything higher than 0 is block
 
     let worldWidth = world[0].length //the mathematical width of the world is the length of the internal array which represents the x axis
     let worldHeight = world.length//the mathematical height of the world is the length of the world array which is the same as the y axis
@@ -351,7 +338,7 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
         return(
                 (world[x] != null) &&//if the x coord is not empty
                 (world[x][y] != null) &&//if the y coord is not empty
-                (world[x][y] <= maxWalkableTileNum)//if the y coord is within the world
+                (world[x][y] <= WalkableTileNum)//if the y coord is within the world
         )
         }
 
@@ -372,7 +359,6 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
 			// from the starting point to this node
 			g:0
 		};
-
 		return newNode;
     }
 
@@ -445,14 +431,16 @@ DOMselectors.startWorld.addEventListener('click', function(){
     console.log('Starting world...')
     onload()
 })
-/* DOMselectors.checkbox.addEventListener('click', function(){
+ DOMselectors.checkbox.addEventListener('click', function(){
     if(checkbox.checked===true){
-        custom = true
+        create = true
     } else{
-        custom = false
+        create = false
     }
-}) */
-DOMselectors.origin.addEventListener('click', function(){
+    console.log(checkbox.checked)
+
+}) 
+DOMselectors.origin.addEventListener('', function(){
     console.log(origin.checked)
     if(origin.value==='on'){
         userSelection = 'origin'
@@ -460,7 +448,7 @@ DOMselectors.origin.addEventListener('click', function(){
 })
 DOMselectors.endpoint.addEventListener('click', function(){
     console.log(endpoint.checked)
-    if(endpoint.value==='on'){
+    if(endpoint.checked===true){
         userSelection = 'endpoint'
     }
 })
@@ -470,3 +458,12 @@ DOMselectors.barrier.addEventListener('click', function(){
         userSelection = 'barrier'
     }
 })
+function click(){
+    DOMselectors.canvas.addEventListener('mousedown', function(e){
+        if(e.which===1){
+            console.log('left click')
+        }else if(e.which===3){
+            console.log('right click')
+        }
+    })
+}

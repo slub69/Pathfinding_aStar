@@ -189,7 +189,7 @@ function canvasClick(e)
 		x = e.clientX + document.body.scrollLeft +
 		document.documentElement.scrollLeft;
 		y = e.clientY + document.body.scrollTop +
-		document.documentElement.scrollTop;
+		document.documentElement.scfrollTop;
 	}
 
 	// make them relative to the canvas only
@@ -373,7 +373,7 @@ function findPath(world, pathStart, pathEnd)
 	function Node(Parent, Point)
 	{
 		var newNode = {
-			// pointer to another Node object
+			// pointer rto another Node object
 			Parent:Parent,
 			// array index of this Node in the world linear array
 			value:Point.x + (Point.y * worldWidth),
