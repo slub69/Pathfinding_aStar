@@ -6,6 +6,8 @@ const DOMselectors = {
     origin: document.getElementById('Origin'),
     endpoint: document.getElementById('Endpoint'),
     barrier: document.getElementById('Barrier'),
+    autoPath: document.getElementById('autoPath'),
+
 
 }
 
@@ -20,6 +22,7 @@ let world = [[]] //generate a 2d array for the world
 
 let create = null //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
+let autoPath = null
 
 //size of world in units of tiles
 let worldWidth = 48
@@ -72,7 +75,7 @@ function createWorld(){
 			    world[x][y] = 1;
 		    }
 	    }
-
+    currentPath = []
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
    //start to find an intial path
@@ -135,24 +138,25 @@ function generatePath(){
     currentPath = [] //clear current path incase rerun
     console.log('Path length= ' + currentPath.length)
     //while(currentPath.length === 0){ //randomly generate a start
-    pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	pathEnd = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	console.log(pathStart + ' ' + pathEnd)
-    if (world[pathStart[0]][pathStart[1]] == 0){//in the event that the start and end are right next to each other than the solution has been found
-		currentPath = findPath(world,pathStart,pathEnd);
-	}
+
     console.log('Path length: ' + currentPath)
     //now we will add an option to draw the path
-    for(rp=0;rp<currentPath.length;rp++){//add button for this function
-        if(rp===0){
-            imageNum = 2 //start tile
-            break
-        } else if(rp===currentPath.length-1){
-            imageNum = 3 //end tile
-        } else{
-            imageNum = 4 //path tile
-            break
-        }
+    if(autoPath===true){//auto 
+        pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
+	    pathEnd = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
+	    console.log(pathStart + ' ' + pathEnd)
+        for(rp=0;rp<currentPath.length;rp++){//add button for this function
+            if(rp===0){
+                imageNum = 2 //start tile
+                break
+            } else if(rp===currentPath.length-1){
+                imageNum = 3 //end tile
+            } else{
+                imageNum = 4 //path tile
+                break
+            }
+    }
+
 /*      switch(rp) this is same as above if else but using switch
 		{
 		case 0:
@@ -261,6 +265,15 @@ function canvasClick(e){
     ]
     console.log('Tile clicked was ' + cell[0]+' , '+cell[1])
 
+    if(userSelection==='origin'){
+        pathStart = cell
+    }else if(userSelection==='barrier'){
+        world[cell[0]][cell[1]] = 1
+        //add code to convert
+        //rmmbr to change math and visual value
+    }else if(userSelection==='endpoint'){
+        pathEnd = cell
+    }
     pathStart = pathEnd
     pathEnd = cell
     currentPath = findPath(world,pathStart,pathEnd)
@@ -440,23 +453,26 @@ DOMselectors.startWorld.addEventListener('click', function(){
     console.log(checkbox.checked)
 
 }) 
-DOMselectors.origin.addEventListener('', function(){
-    console.log(origin.checked)
-    if(origin.value==='on'){
+DOMselectors.origin.addEventListener('click', function(e){
+    console.log(e.target.checked)
+    if(e.target.checked===true){
         userSelection = 'origin'
     }
 })
-DOMselectors.endpoint.addEventListener('click', function(){
-    console.log(endpoint.checked)
-    if(endpoint.checked===true){
+DOMselectors.endpoint.addEventListener('click', function(e){
+    console.log(e.target.checked)
+    if(e.target.checked===true){
         userSelection = 'endpoint'
     }
 })
-DOMselectors.barrier.addEventListener('click', function(){
-    console.log(barrier.checked)
-    if(barrier.value==='on'){
+DOMselectors.barrier.addEventListener('click', function(e){
+    console.log(e.target.checked)
+    if(e.target.checked===true){
         userSelection = 'barrier'
     }
+})
+DOMselectors.autoPath.addEventListener('click', function(){
+    autoPath = true
 })
 function click(){
     DOMselectors.canvas.addEventListener('mousedown', function(e){
