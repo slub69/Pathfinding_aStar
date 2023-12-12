@@ -6,7 +6,7 @@ const DOMselectors = {
     origin: document.getElementById('Origin'),
     endpoint: document.getElementById('Endpoint'),
     barrier: document.getElementById('Barrier'),
-    autoPath: document.getElementById('autoPath'),
+    autopath: document.getElementById('autoPath'),
 
 
 }
@@ -69,17 +69,22 @@ function createWorld(){
                 world[x][y] = 0 // set the array inside the array to be empty
                 }
             }
-        for (let x=0; x < worldWidth; x++){
-		    for (let y=0; y < worldHeight; y++){
-			    if (Math.random() > 0.75)
-			    world[x][y] = 1;
-		    }
-	    }
-    currentPath = []
+        if(create===true){
+            for (let x=0; x < worldWidth; x++){
+		         for (let y=0; y < worldHeight; y++){
+			        if (Math.random() > 0.75)
+			        world[x][y] = 1;
+                    }
+	            }
+            }
+        console.log('World: ' + world)
+
+
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
    //start to find an intial path
-   
+   currentPath = []
+   currentPath = findPath(world,pathStart,pathEnd)
    generatePath()
    
    
@@ -107,15 +112,6 @@ function generate(){
     ctx.fillRect(0,0,canvas.width,canvas.height)//clear the "math world" and set the array to be 0 again
     for(x = 0;x<worldWidth;x++){
         for(y=0;y<worldHeight;y++){
-            if(create===false){
-                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
-                    case 1:
-                        imageNum = 0; //the sprite num will be used throughout to pull the images from the reference image
-                        break;
-                    default:
-                        imageNum = 0;
-                        break;
-            }} else if(create===true){
                 switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
                     case 1:
                         imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
@@ -123,7 +119,7 @@ function generate(){
                     default:
                         imageNum = 0;
                         break;
-            }}
+            }
             ctx.drawImage(referenceSheet,
                 imageNum*tileWidth, 0,
                 tileWidth, tileHeight,
@@ -135,8 +131,6 @@ function generate(){
 }
 
 function generatePath(){
-    currentPath = [] //clear current path incase rerun
-    console.log('Path length= ' + currentPath.length)
     //while(currentPath.length === 0){ //randomly generate a start
 
     console.log('Path length: ' + currentPath)
@@ -267,6 +261,7 @@ function canvasClick(e){
 
     if(userSelection==='origin'){
         pathStart = cell
+        imageNum = 2
     }else if(userSelection==='barrier'){
         world[cell[0]][cell[1]] = 1
         //add code to convert
@@ -471,9 +466,13 @@ DOMselectors.barrier.addEventListener('click', function(e){
         userSelection = 'barrier'
     }
 })
-DOMselectors.autoPath.addEventListener('click', function(){
-    autoPath = true
-})
+DOMselectors.autopath.addEventListener('click', function(){
+    if(autopath.checked===true){
+        autoPath = true
+    } else{
+        autoPath = false
+    }
+    console.log(checkbox.checked)})
 function click(){
     DOMselectors.canvas.addEventListener('mousedown', function(e){
         if(e.which===1){
