@@ -7,7 +7,7 @@ const DOMselectors = {
     endpoint: document.getElementById('Endpoint'),
     barrier: document.getElementById('Barrier'),
     autopath: document.getElementById('autoPath'),
-
+    delete: document.getElementById('Delete'),
 
 }
 
@@ -103,7 +103,7 @@ function createWorld(){
 
 }
 function generate(){
-    if(!referenceSheetloaded){ //if the reference sheet did not load then break otherwise cannot draw
+    if(!referenceSheetloaded){ //if the reference sheet did not load then break b/c cannot draw
         return
     }
     console.log('Drawing World...')
@@ -116,8 +116,13 @@ function generate(){
                     case 1:
                         imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
                         break;
+                    case 2:
+                        imageNum = 2 //start pnt
+                        break
+                    case 3:
+                        imageNum = 3 //end point
                     default:
-                        imageNum = 0;
+                        imageNum = 0 //empty tile   
                         break;
             }
             ctx.drawImage(referenceSheet,
@@ -135,21 +140,46 @@ function generatePath(){
 
     console.log('Path length: ' + currentPath)
     //now we will add an option to draw the path
-    if(autoPath===true){//auto 
+/*     if(autoPath===true){//auto 
         pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
 	    pathEnd = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
 	    console.log(pathStart + ' ' + pathEnd)
         for(rp=0;rp<currentPath.length;rp++){//add button for this function
             if(rp===0){
                 imageNum = 2 //start tile
-                break
+                
             } else if(rp===currentPath.length-1){
                 imageNum = 3 //end tile
             } else{
                 imageNum = 4 //path tile
-                break
+                
             }
-    }
+            ctx.drawImage(referenceSheet,//draws the path on top of the img
+            imageNum*tileWidth, 0,
+            tileWidth, tileHeight,
+            currentPath[rp][0]*tileWidth,
+            currentPath[rp][1]*tileHeight,
+            tileWidth, tileHeight)
+        }
+    } else{
+        for(rp=0;rp<world.length;rp++){//add button for this function
+            if(world = 0){
+                imageNum = 2 //start tile
+
+            } else if(rp===currentPath.length-1 & userSelection==='endpoint'){
+                imageNum = 3 //end tile
+                
+            } else{
+                imageNum = 4 //path tile
+                
+            }
+            ctx.drawImage(referenceSheet,//draws the path on top of the img
+            imageNum*tileWidth, 0,
+            tileWidth, tileHeight,
+            currentPath[rp][0]*tileWidth,
+            currentPath[rp][1]*tileHeight,
+            tileWidth, tileHeight)
+        } */
 
 /*      switch(rp) this is same as above if else but using switch
 		{
@@ -162,15 +192,11 @@ function generatePath(){
 		default:
 			imageNum = 4; // path node
 			break;
-		} */
-        ctx.drawImage(referenceSheet,//draws the path on top of the img
-            imageNum*tileWidth, 0,
-            tileWidth, tileHeight,
-            currentPath[rp][0]*tileWidth,
-            currentPath[rp][1]*tileHeight,
-            tileWidth, tileHeight)
-    }
+		} 
+
+    }*/
 }
+
 
 /* function redraw(){
     if(!referenceSheetloaded){ //if the reference sheet did not load then break otherwise cannot draw
@@ -259,18 +285,14 @@ function canvasClick(e){
     ]
     console.log('Tile clicked was ' + cell[0]+' , '+cell[1])
 
-    if(userSelection==='origin'){
-        pathStart = cell
-        imageNum = 2
-    }else if(userSelection==='barrier'){
-        world[cell[0]][cell[1]] = 1
-        //add code to convert
-        //rmmbr to change math and visual value
-    }else if(userSelection==='endpoint'){
-        pathEnd = cell
+    if(world[cell[0]][cell[1]] != 1){
+        world[cell[0]][cell[1]] = 2
     }
+    
+    console.log('after click' + world)
     pathStart = pathEnd
     pathEnd = cell
+
     currentPath = findPath(world,pathStart,pathEnd)
     generatePath()
 }
@@ -449,10 +471,10 @@ DOMselectors.startWorld.addEventListener('click', function(){
 
 }) 
 DOMselectors.origin.addEventListener('click', function(e){
-    console.log(e.target.checked)
     if(e.target.checked===true){
         userSelection = 'origin'
     }
+    console.log(userSelection + ' selected')
 })
 DOMselectors.endpoint.addEventListener('click', function(e){
     console.log(e.target.checked)
@@ -466,19 +488,16 @@ DOMselectors.barrier.addEventListener('click', function(e){
         userSelection = 'barrier'
     }
 })
-DOMselectors.autopath.addEventListener('click', function(){
+DOMselectors.delete.addEventListener('click', function(e){
+    console.log(e.target.checked)
+    if(e.target.checked===true){
+        userSelection = 'delete'
+    }
+})
+/* DOMselectors.autopath.addEventListener('click', function(){
     if(autopath.checked===true){
         autoPath = true
     } else{
         autoPath = false
     }
-    console.log(checkbox.checked)})
-function click(){
-    DOMselectors.canvas.addEventListener('mousedown', function(e){
-        if(e.which===1){
-            console.log('left click')
-        }else if(e.which===3){
-            console.log('right click')
-        }
-    })
-}
+    console.log(checkbox.checked)}) */
