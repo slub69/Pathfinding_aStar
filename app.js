@@ -23,7 +23,8 @@ let world = [[]] //generate a 2d array for the world
 let create = null //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
 let autoPath = null
-
+let start = false
+let end = false
 //size of world in units of tiles
 let worldWidth = 48
 let worldHeight = 16
@@ -121,8 +122,9 @@ function generate(){
                         break
                     case 3:
                         imageNum = 3 //end point
+                        break
                     default:
-                        imageNum = 0 //empty tile   
+                        imageNum = 0 //empty tile    
                         break;
             }
             ctx.drawImage(referenceSheet,
@@ -284,15 +286,34 @@ function canvasClick(e){
         Math.floor(y/tileHeight)
     ]
     console.log('Tile clicked was ' + cell[0]+' , '+cell[1])
-
     if(world[cell[0]][cell[1]] != 1){
-        world[cell[0]][cell[1]] = 2
+        if(userSelection === 2 && start != true){//start
+            world[cell[0]][cell[1]] = 2
+            start = true
+        }else if(userSelection === 3 && end != true){//end
+            world[cell[0]][cell[1]] = 3
+            end = true
+        }else if(userSelection === 1){//barrier
+            world[cell[0]][cell[1]] = 1
+        }else if(userSelection === 0){
+            if(world[cell[0]][cell[1]] === 2){
+                start = false
+            }else if(world[cell[0]][cell[1]] === 3){
+                end = false
+            }
+            world[cell[0]][cell[1]] = 0
+        } 
+    }else if(world[cell[0]][cell[1]] === 1){
+        if(userSelection === 0)
+        world[cell[0]][cell[1]] = 0//empty
     }
-    
-    console.log('after click' + world)
-    pathStart = pathEnd
-    pathEnd = cell
 
+    generate()
+    if(userSelection===2){
+        pathStart = cell
+    }else if(userSelection===3){
+        pathEnd = cell
+    }
     currentPath = findPath(world,pathStart,pathEnd)
     generatePath()
 }
@@ -472,26 +493,26 @@ DOMselectors.startWorld.addEventListener('click', function(){
 }) 
 DOMselectors.origin.addEventListener('click', function(e){
     if(e.target.checked===true){
-        userSelection = 'origin'
+        userSelection = 2
     }
     console.log(userSelection + ' selected')
 })
 DOMselectors.endpoint.addEventListener('click', function(e){
-    console.log(e.target.checked)
     if(e.target.checked===true){
-        userSelection = 'endpoint'
+        userSelection = 3
     }
+    console.log(userSelection + ' selected')
 })
 DOMselectors.barrier.addEventListener('click', function(e){
     console.log(e.target.checked)
     if(e.target.checked===true){
-        userSelection = 'barrier'
+        userSelection = 1
     }
 })
 DOMselectors.delete.addEventListener('click', function(e){
     console.log(e.target.checked)
     if(e.target.checked===true){
-        userSelection = 'delete'
+        userSelection = 0
     }
 })
 /* DOMselectors.autopath.addEventListener('click', function(){
