@@ -34,9 +34,9 @@ let tileWidth = 32
 let tileHeight = 32
 
 //generate the start,end,and current of the path
-let pathStart = [worldWidth,worldHeight]
+let pathStart = []
 console.log('initial path start ' + pathStart)
-let pathEnd = [0,0]
+let pathEnd = []
 let currentPath = []
 
 
@@ -83,11 +83,7 @@ function createWorld(){
 
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
-   //start to find an intial path
-   currentPath = []
-   currentPath = findPath(world,pathStart,pathEnd)
-   generatePath()
-   
+   //start to find an intial path   
    
 /*    currentPath = [] //clear current path incase rerun
    console.log('0 = ' + currentPath.length)
@@ -107,7 +103,7 @@ function generate(){
     if(!referenceSheetloaded){ //if the reference sheet did not load then break b/c cannot draw
         return
     }
-    console.log('Drawing World...')
+    console.log('drawing...')
     let imageNum = 0
     ctx.fillStyle = '#000000'//set the world to be a black screen
     ctx.fillRect(0,0,canvas.width,canvas.height)//clear the "math world" and set the array to be 0 again
@@ -121,7 +117,10 @@ function generate(){
                         imageNum = 2 //start pnt
                         break
                     case 3:
-                        imageNum = 3 //end point
+                        imageNum = 3 //end pnt
+                        break
+                    case 4:
+                        imageNum = 4 //path tile
                         break
                     default:
                         imageNum = 0 //empty tile    
@@ -139,7 +138,18 @@ function generate(){
 
 function generatePath(){
     //while(currentPath.length === 0){ //randomly generate a start
+    currentPath = []
 
+    currentPath = findPath(world, pathStart, pathEnd)
+    for(rp = 0; rp<currentPath.length;rp++){
+        spriteNum = 4
+        ctx.drawImage(referenceSheet,
+            spriteNum*tileWidth, 0,
+            tileWidth, tileHeight,
+            currentPath[rp][0]*tileWidth,
+            currentPath[rp][1]*tileHeight,
+            tileWidth, tileHeight);
+    }
     console.log('Path length: ' + currentPath)
     //now we will add an option to draw the path
 /*     if(autoPath===true){//auto 
@@ -290,9 +300,11 @@ function canvasClick(e){
         if(userSelection === 2 && start != true){//start
             world[cell[0]][cell[1]] = 2
             start = true
+            pathStart = cell
         }else if(userSelection === 3 && end != true){//end
             world[cell[0]][cell[1]] = 3
             end = true
+            pathEnd = cell
         }else if(userSelection === 1){//barrier
             world[cell[0]][cell[1]] = 1
         }else if(userSelection === 0){
@@ -309,19 +321,14 @@ function canvasClick(e){
     }
 
     generate()
-    if(userSelection===2){
-        pathStart = cell
-    }else if(userSelection===3){
-        pathEnd = cell
-    }
     currentPath = findPath(world,pathStart,pathEnd)
     generatePath()
 }
-
-
 function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding alogrithm
-	let	pow = Math.pow
-	let	sqrt = Math.sqrt
+	let	abs = Math.abs;
+	let	max = Math.max;
+	let	pow = Math.pow;
+	let	sqrt = Math.sqrt;
 
     
     let WalkableTileNum = 0 //since the world is represented by a bunch of 0 anything higher than 0 is block
@@ -335,7 +342,9 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
 	{	// diagonals are considered a little farther than cardinal directions
 		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
 		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
-		return sqrt(pow(Point.x - Goal.x, 2) + pow(Point.y - Goal.y, 2));
+		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
+        
+        //return sqrt(pow(Point.x - Goal.x, 2) + pow(Point.y - Goal.y, 2));
 	}
     let findNeighbours = DiagonalNeighboursFree
 
@@ -414,11 +423,10 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
     }
 
     function calculatePath(){
-        console.log('Starting node cords ' + pathStart)
         let tilePathStart = Node(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
         let tilePathEnd = Node(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
 
-        let AStar = new Array(worldSize) // creates an array the size of the world (conatins all nodes in the world)
+        let AStar = Array(worldSize) // creates an array the size of the world (conatins all nodes in the world)
 
         let Open = [tilePathStart] //Set of open tiles starts the start tile
 
@@ -446,9 +454,10 @@ function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding
             tileNode = Open.splice(min, 1)[0]//defines knew node as node with lowest cost value (f)
             if(tileNode.value === tilePathEnd.value){//check if destination has been reached
                 tilePath = Closed[Closed.push(tileNode) - 1]
-                while(tilePath = tilePath.parent){
-                    result.push([tilePath.x,tilePath.y])
+                do{
+                    result.push([tilePath.x, tilePath.y])
                 }
+                while(tilePath = tilePath.parent)
                 AStar = Closed = Open = []//clear the working arrays
                 result.reverse()//return start to finsih not finsih to start
             }else{ //destination has not been reached
@@ -495,13 +504,11 @@ DOMselectors.origin.addEventListener('click', function(e){
     if(e.target.checked===true){
         userSelection = 2
     }
-    console.log(userSelection + ' selected')
 })
 DOMselectors.endpoint.addEventListener('click', function(e){
     if(e.target.checked===true){
         userSelection = 3
     }
-    console.log(userSelection + ' selected')
 })
 DOMselectors.barrier.addEventListener('click', function(e){
     console.log(e.target.checked)
@@ -514,6 +521,9 @@ DOMselectors.delete.addEventListener('click', function(e){
     if(e.target.checked===true){
         userSelection = 0
     }
+})
+DOMselectors.runSearch.addEventListener('click', function(){
+    generatePath()
 })
 /* DOMselectors.autopath.addEventListener('click', function(){
     if(autopath.checked===true){
