@@ -436,7 +436,6 @@ function findPath(world, pathStart, pathEnd)
 		result.push({x:W, y:y});
         }
         findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
-        console.log(result)
 		return result;
 	}
 
@@ -507,7 +506,6 @@ function findPath(world, pathStart, pathEnd)
 			// from the starting point to this node
 			g:0
 		};
-
 		return newNode;
 	}
 
@@ -534,12 +532,11 @@ function findPath(world, pathStart, pathEnd)
 		// temp integer variables used in the calculations
 		let length, max, min, i, j;
 		// iterate through the open list until none are left
-		while(length = Open.length)
-		{
+		while(length = Open.length){
+            console.log('awdionawdob '+length)
 			max = worldSize;
 			min = -1;
-			for(i = 0; i < length; i++)
-			{
+			for(i = 0; i < length; i++){
 				if(Open[i].f < max)
 				{
 					max = Open[i].f;
@@ -549,28 +546,26 @@ function findPath(world, pathStart, pathEnd)
 			// grab the next node and remove it from Open array
 			myNode = Open.splice(min, 1)[0];
 			// is it the destination node?
-			if(myNode.value === mypathEnd.value)
-			{
+			if(myNode.value === mypathEnd.value){
 				myPath = Closed[Closed.push(myNode) - 1];
 				do
 				{
 					result.push([myPath.x, myPath.y]);
                     console.log('res '+ result)
 				}
-				while (myPath = myPath.Parent);
+				while (myPath === myPath.Parent);
 				// clear the working arrays
 				AStar = Closed = Open = [];
 				// we want to return start to finish
 				result.reverse();
 			}
-			else // not the destination
-			{
+			else{// not the destination
 				// find which nearby nodes are walkable
 				myNeighbours = Neighbours(myNode.x, myNode.y);
 				// test each one that hasn't been tried already
-				for(i = 0, j = myNeighbours.length; i < j; i++)
-				{
+				for(i = 0; i < myNeighbours.length; i++){
 					myPath = Node(myNode, myNeighbours[i]);
+                    console.log('mrpath: ' + myPath)
 					if (!AStar[myPath.value])
 					{
 						// estimated cost of this particular route so far
@@ -587,6 +582,8 @@ function findPath(world, pathStart, pathEnd)
 				Closed.push(myNode);
 			}
 		} // keep iterating until the Open list is empty
+        console.log('eeeeee ' + Open.length)
+
 		return result;
 	}
 
