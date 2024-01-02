@@ -140,18 +140,10 @@ function generatePath(){
     //while(currentPath.length === 0){ //randomly generate a start
     console.log('generating')
     currentPath = []
-    currentPath = findPath(world, pathStart, pathEnd)
+    currentPath = findPath(world, pathStart, pathEnd)//find the mathematical path
     console.log('Generate path: ' + currentPath)
-    for(rp = 0; rp<currentPath.length;rp++){
-        spriteNum = 4
-        ctx.drawImage(referenceSheet,
-            spriteNum*tileWidth, 0,
-            tileWidth, tileHeight,
-            currentPath[rp][0]*tileWidth,
-            currentPath[rp][1]*tileHeight,
-            tileWidth, tileHeight);
-    }
-    console.log('Path length: ' + currentPath)
+    generate()//draw path
+    console.log('Path length: ' + currentPath.length)
     //now we will add an option to draw the path
 /*     if(autoPath===true){//auto 
         pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
@@ -328,8 +320,7 @@ function canvasClick(e){
     generate()
 }
 
-function findPath(world, pathStart, pathEnd)
-{
+function findPath(world, pathStart, pathEnd){
 	// shortcuts for speed
 	let	abs = Math.abs;
 	let	max = Math.max;
@@ -352,6 +343,12 @@ function findPath(world, pathStart, pathEnd)
 
 	// which heuristic should we use?
 	// default: no diagonals (Manhattan)
+    function h(pathStart,pathEnd){//distance to destination
+        
+    }
+    function g(pathStart, pathEnd){//distance to home
+
+    }
 	let distanceFunction = ManhattanDistance;
 	let findNeighbours = function(){}; // empty
 
@@ -489,8 +486,7 @@ function findPath(world, pathStart, pathEnd)
 
 	// Node function, returns a new object with Node properties
 	// Used in the calculatePath function to store route costs, etc.
-	function Node(Parent, Point)
-	{
+	function Node(Parent, Point){
 		let newNode = {
 			// pointer rto another Node object
 			Parent:Parent,
@@ -533,7 +529,7 @@ function findPath(world, pathStart, pathEnd)
 		let length, max, min, i, j;
 		// iterate through the open list until none are left
 		while(length = Open.length){
-            console.log('awdionawdob '+length)
+            console.log('awdionawdob '+ length)
 			max = worldSize;
 			min = -1;
 			for(i = 0; i < length; i++){
@@ -756,6 +752,8 @@ function findPath(world, pathStart, pathEnd)
 
 DOMselectors.randomizeWorld.addEventListener('click', function(){
     console.log('Generating world... \n')
+    start = false
+    end = false
     createWorld()
 })
 DOMselectors.startWorld.addEventListener('click', function(){
