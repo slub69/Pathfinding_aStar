@@ -805,33 +805,16 @@ DOMselectors.randomizeWorld.addEventListener('click', function(){
 DOMselectors.corners.addEventListener('click', function(){
     for(x = 0;x<worldWidth;x++){
         for(y=0;y<worldHeight;y++){
-                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
-                    case 1:
-                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
-                        break;
-                    case 2:
-                        imageNum = 2 //start pnt
-                        break
-                    case 3:
-                        imageNum = 3 //end pnt
-                        break
-                    case 4:
-                        world[x][y] = 0
-                        imageNum = 4 //path tile
-                        break
-                    default:
-                        imageNum = 0 //empty tile    
-                        break;
-            }
+            if(world[x][y] == 4){
+                world[x][y] = 0
+            }    
             ctx.drawImage(referenceSheet,
                     imageNum*tileWidth, 0,
                     tileWidth, tileHeight,
                     x*tileWidth, y*tileHeight,
                     tileWidth, tileHeight)
             
-            
-            // ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
-        }//at this point the world has been drawn using the reference img
+        }
     }
     if(corners == true){
         corners == false
