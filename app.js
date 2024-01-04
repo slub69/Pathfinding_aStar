@@ -138,10 +138,9 @@ function generate(){
 
 function generatePath(){
     //while(currentPath.length === 0){ //randomly generate a start
-    console.log('generating')
-    currentPath = []
-    currentPath = findPath(world, pathStart, pathEnd)//find the mathematical path
-    console.log('Generate path: ' + currentPath)
+    console.log('searching...')
+    let currentPath = findPath(world, pathStart, pathEnd)//find the mathematical path
+    console.log(currentPath+'')
     generate()//draw path
     //now we will add an option to draw the path
 /*     if(autoPath===true){//auto 
@@ -271,7 +270,6 @@ function canvasClick(e){
     if(e.pageX != undefined && e.pageY != undefined){//check if html page coords are real and then find them
         x = e.pageX
         y = e.pageY
-        console.log('click coords = ' + x + y)
     }else{ //if html coords are undefined scroll to where they are defined
         x = e.clientX + document.body.scrollLeft +
         document.documentElement.scrollLeft
@@ -338,35 +336,31 @@ function findPath(world, pathStart, pathEnd){
             this.h = 0;
         }
     }
-    
-    // A Utility Function to check whether given cell (row, col)
+    // A Utility Function to check whether given     (row, col)
     // is a valid cell or not.
-    function isValid(row, col)
-    {
-        // Returns true if row number and column number
-        // is in range
+    function isValid(row, col){// Returns true if row number and column number is in range
         return (row >= 0) && (row < ROW) && (col >= 0) && (col < COL);
     }
     
     // A Utility Function to check whether the given cell is
     // blocked or not
-    function isUnBlocked(grid, row, col)
-    {
+    function isUnBlocked(grid, row, col){
         // Returns true if the cell is not blocked else false
-        if (grid[row][col] == 1)
+        if (grid[row][col] == 0)
             return (true);
         else
             return (false);
     }
     
-    // A Utility Function to check whether destination cell has
-    // been reached or not
-    function isDestination(row, col, dest)
+    // A Utility Function to check whether destination cell has been reached or not
+    function isDestination(row, col, dest, grid)
     {
-        if (row == dest[0] && col == dest[1])
+        if (row == dest[0] && col == dest[1] || grid[row][col] == 3){
             return (true);
-        else
+        }
+        else{
             return (false);
+        }
     }
     
     // A Utility Function to calculate the 'h' heuristics.
@@ -376,8 +370,7 @@ function findPath(world, pathStart, pathEnd){
         return (Math.sqrt((row - dest[0]) * (row - dest[0]) + (col - dest[1]) * (col - dest[1])));
     }
     
-    // A Utility Function to trace the path from the source
-    // to destination
+    // A Utility Function to trace the path from the source to destination
     function tracePath(cellDetails, dest)
     {
         console.log("The Path is ");
@@ -386,26 +379,24 @@ function findPath(world, pathStart, pathEnd){
     
         // stack<Pair> Path;
         let Path = [];
-    
-        while (!(cellDetails[row][col].parent_i == row && cellDetails[row][col].parent_j == col)) {
+        while (!(cellDetails[row][col].parent_i == row && cellDetails[row][col].parent_j == col)){
             Path.push([row, col]);
             let temp_row = cellDetails[row][col].parent_i;
             let temp_col = cellDetails[row][col].parent_j;
             row = temp_row;
             col = temp_col;
+            console.log(Path)
         }
     
         Path.push([row, col]);
-        while (Path.length > 0) {
+        returnpath = Path
+        console.log(returnpath + '')
+/*         while (Path.length > 0) {
             let p = Path[0];
             Path.shift();
-            
-            if(p[0] == 2 || p[0] == 1){
-                console.log("-> (" + p[0] + ", " + (p[1] - 1) + ")");
-            }
-            else console.log("-> (" + p[0] + ", " + p[1] + ")");
-        }
-    
+            currentPath.push(p)
+        } */
+        
         return;
     }
     
@@ -427,24 +418,17 @@ function findPath(world, pathStart, pathEnd){
         }
     
         // Either the source or the destination is blocked
-        if (isUnBlocked(grid, src[0], src[1]) == false
+/*         if (isUnBlocked(grid, src[0], src[1]) == false
             || isUnBlocked(grid, dest[0], dest[1])
                 == false) {
             console.log("Source or the destination is blocked\n");
             return;
-        }
-    
-        // If the destination cell is the same as source cell
-        if (isDestination(src[0], src[1], dest)
-            == true) {
-            console.log("We are already at the destination\n");
-            return;
-        }
-    
+        } */
         // Create a closed list and initialise it to false which
         // means that no cell has been included yet This closed
         // list is implemented as a boolean 2D array
         let closedList = new Array(ROW);
+        console.log(closedList)
         for(let i = 0; i < ROW; i++){
             closedList[i] = new Array(COL).fill(false);
         }
@@ -536,7 +520,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i - 1, j) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i - 1, j, dest) == true) {
+                if (isDestination(i - 1, j, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i - 1][j].parent_i = i;
                     cellDetails[i - 1][j].parent_j = j;
@@ -583,7 +567,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i + 1, j) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i + 1, j, dest) == true) {
+                if (isDestination(i + 1, j, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i + 1][j].parent_i = i;
                     cellDetails[i + 1][j].parent_j = j;
@@ -629,7 +613,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i, j + 1) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i, j + 1, dest) == true) {
+                if (isDestination(i, j + 1, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i][j + 1].parent_i = i;
                     cellDetails[i][j + 1].parent_j = j;
@@ -677,7 +661,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i, j - 1) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i, j - 1, dest) == true) {
+                if (isDestination(i, j - 1, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i][j - 1].parent_i = i;
                     cellDetails[i][j - 1].parent_j = j;
@@ -726,7 +710,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i - 1, j + 1) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i - 1, j + 1, dest) == true) {
+                if (isDestination(i - 1, j + 1, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i - 1][j + 1].parent_i = i;
                     cellDetails[i - 1][j + 1].parent_j = j;
@@ -775,7 +759,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i - 1, j - 1) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i - 1, j - 1, dest) == true) {
+                if (isDestination(i - 1, j - 1, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i - 1][j - 1].parent_i = i;
                     cellDetails[i - 1][j - 1].parent_j = j;
@@ -823,7 +807,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i + 1, j + 1) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i + 1, j + 1, dest) == true) {
+                if (isDestination(i + 1, j + 1, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i + 1][j + 1].parent_i = i;
                     cellDetails[i + 1][j + 1].parent_j = j;
@@ -872,7 +856,7 @@ function findPath(world, pathStart, pathEnd){
             if (isValid(i + 1, j - 1) == true) {
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i + 1, j - 1, dest) == true) {
+                if (isDestination(i + 1, j - 1, dest, grid) == true) {
                     // Set the Parent of the destination cell
                     cellDetails[i + 1][j - 1].parent_i = i;
                     cellDetails[i + 1][j - 1].parent_j = j;
@@ -900,7 +884,7 @@ function findPath(world, pathStart, pathEnd){
                     // If it is on the open list already, check
                     // to see if this path to that square is
                     // better, using 'f' cost as the measure.
-                    if (cellDetails[i + 1][j - 1].f == FLT_MAX
+                    if (cellDetails[i + 1][j - 1].f == 2147483647
                         || cellDetails[i + 1][j - 1].f > fNew) {
                         openList.set(fNew, [i + 1, j - 1]);
     
@@ -925,417 +909,9 @@ function findPath(world, pathStart, pathEnd){
     
         return;
     }
+    aStarSearch(grid,src,dest)
+    return currentPath
 }
-
-
-
-
-
-
-
-
-
-function empty(){
-	let distanceFunction = ManhattanDistance;
-	let findNeighbours = function(){}; // empty
-
-    function canWalkHere(x, y)
-	{
-		return ((world[x] != null) &&
-			(world[x][y] != null) &&
-			(world[x][y] <= maxWalkableTileNum));
-	};
-
-    
-    /*
-
-	// alternate heuristics, depending on your game:
-
-	// diagonals allowed but no sqeezing through cracks:
-	let distanceFunction = DiagonalDistance;
-	let findNeighbours = DiagonalNeighbours;
-
-	// diagonals and squeezing through cracks allowed:
-	let distanceFunction = DiagonalDistance;
-	let findNeighbours = DiagonalNeighboursFree;
-
-	// euclidean but no squeezing through cracks:
-	let distanceFunction = EuclideanDistance;
-	let findNeighbours = DiagonalNeighbours;
-
-	// euclidean and squeezing through cracks allowed:
-	let distanceFunction = EuclideanDistance;
-	let findNeighbours = DiagonalNeighboursFree;
-
-	*/
-
-	// distanceFunction functions
-	// these return how far away a point is to another
-
-	function ManhattanDistance(Point, Goal)
-	{	// linear movement - no diagonals - just cardinal directions (NSEW)
-		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
-	}
-
-	function DiagonalDistance(Point, Goal)
-	{	// diagonal movement - assumes diag dist is 1, same as cardinals
-		return max(abs(Point.x - Goal.x), abs(Point.y - Goal.y));
-	}
-
-	function EuclideanDistance(Point, Goal)
-	{	// diagonals are considered a little farther than cardinal directions
-		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
-		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
-		return sqrt(pow(Point.x - Goal.x, 2) + pow(Point.y - Goal.y, 2));
-	}
-
-	// Neighbours functions, used by findNeighbours function
-	// to locate adjacent available cells that aren't blocked
-
-	// Returns every available North, South, East or West
-	// cell that is empty. No diagonals,
-	// unless distanceFunction function is not Manhattan
-	function Neighbours(x, y)
-	{
-		let	N = y - 1,
-		S = y + 1,
-		E = x + 1,
-		W = x - 1,
-		myN = N > -1 && canWalkHere(x, N),
-		myS = S < worldHeight && canWalkHere(x, S),
-		myE = E < worldWidth && canWalkHere(E, y),
-		myW = W > -1 && canWalkHere(W, y),
-		result = [];
-        console.log(myN)
-		if(myN){
-		result.push({x:x, y:N});
-        }
-		if(myE){
-		result.push({x:E, y:y});
-        }
-        if(myS){
-		result.push({x:x, y:S});
-        }
-        if(myW){
-		result.push({x:W, y:y});
-        }
-        findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
-		return result;
-	}
-
-	// returns every available North East, South East,
-	// South West or North West cell - no squeezing through
-	// "cracks" between two diagonals
-	function DiagonalNeighbours(myN, myS, myE, myW, N, S, E, W, result)
-	{
-		if(myN)
-		{
-			if(myE && canWalkHere(E, N))
-			result.push({x:E, y:N});
-			if(myW && canWalkHere(W, N))
-			result.push({x:W, y:N});
-		}
-		if(myS)
-		{
-			if(myE && canWalkHere(E, S))
-			result.push({x:E, y:S});
-			if(myW && canWalkHere(W, S))
-			result.push({x:W, y:S});
-		}
-	}
-
-	// returns every available North East, South East,
-	// South West or North West cell including the times that
-	// you would be squeezing through a "crack"
-	function DiagonalNeighboursFree(myN, myS, myE, myW, N, S, E, W, result)
-	{
-		myN = N > -1;
-		myS = S < worldHeight;
-		myE = E < worldWidth;
-		myW = W > -1;
-		if(myE)
-		{
-			if(myN && canWalkHere(E, N))
-			result.push({x:E, y:N});
-			if(myS && canWalkHere(E, S))
-			result.push({x:E, y:S});
-		}
-		if(myW)
-		{
-			if(myN && canWalkHere(W, N))
-			result.push({x:W, y:N});
-			if(myS && canWalkHere(W, S))
-			result.push({x:W, y:S});
-		}
-	}
-
-	// returns boolean value (world cell is available and open)
-
-	// Node function, returns a new object with Node properties
-	// Used in the calculatePath function to store route costs, etc.
-	function Node(Parent, Point){
-		let newNode = {
-			// pointer rto another Node object
-			Parent:Parent,
-			// array index of this Node in the world linear array
-			value:Point.x + (Point.y * worldWidth),
-			// the location coordinates of this Node
-			x:Point.x,
-			y:Point.y,
-			// the heuristic estimated cost
-			// of an entire path using this node
-			f:0,
-			// the distanceFunction cost to get
-			// from the starting point to this node
-			g:0
-		};
-		return newNode;
-	}
-
-	// Path function, executes AStar algorithm operations
-	function calculatePath()
-	{
-		// create Nodes from the Start and End x,y coordinates
-		let	mypathStart = Node(null, {x:pathStart[0], y:pathStart[1]});
-		let mypathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
-		// create an array that will contain all world cells
-		let AStar = new Array(worldSize);
-		// list of currently open Nodes
-		let Open = [mypathStart];
-		// list of closed Nodes
-		let Closed = [];
-		// list of the final output array
-		let result = [];
-		// reference to a Node (that is nearby)
-		let myNeighbours;
-		// reference to a Node (that we are considering now)
-		let myNode;
-		// reference to a Node (that starts a path in question)
-		let myPath;
-		// temp integer variables used in the calculations
-		let length, max, min, i, j;
-		// iterate through the open list until none are left
-		while(length = Open.length){
-            console.log('awdionawdob '+ length)
-			max = worldSize;
-			min = -1;
-			for(i = 0; i < length; i++){
-				if(Open[i].f < max)
-				{
-					max = Open[i].f;
-					min = i;
-				}
-			}
-			// grab the next node and remove it from Open array
-			myNode = Open.splice(min, 1)[0];
-			// is it the destination node?
-			if(myNode.value === mypathEnd.value){
-				myPath = Closed[Closed.push(myNode) - 1];
-				do
-				{
-					result.push([myPath.x, myPath.y]);
-                    console.log('res '+ result)
-				}
-				while (myPath === myPath.Parent);
-				// clear the working arrays
-				AStar = Closed = Open = [];
-				// we want to return start to finish
-				result.reverse();
-			}
-			else{// not the destination
-				// find which nearby nodes are walkable
-				myNeighbours = Neighbours(myNode.x, myNode.y);
-				// test each one that hasn't been tried already
-				for(i = 0; i < myNeighbours.length; i++){
-					myPath = Node(myNode, myNeighbours[i]);
-                    console.log('mrpath: ' + myPath)
-					if (!AStar[myPath.value])
-					{
-						// estimated cost of this particular route so far
-						myPath.g = myNode.g + distanceFunction(myNeighbours[i], myNode);
-						// estimated cost of entire guessed route to the destination
-						myPath.f = myPath.g + distanceFunction(myNeighbours[i], mypathEnd);
-						// remember this new path for testing above
-						Open.push(myPath);
-						// mark this node in the world graph as visited
-						AStar[myPath.value] = true;
-					}
-				}
-				// remember this route as having no more untested options
-				Closed.push(myNode);
-			}
-		} // keep iterating until the Open list is empty
-        console.log('eeeeee ' + Open.length)
-
-		return result;
-	}
-
-	// actually calculate the a-star path!
-	// this returns an array of coordinates
-	// that is empty if no path -is possible
-	return calculatePath();
-
-} // end of findPath() function
-
-/* function findPath(world, pathStart, pathEnd){//writing the actual a* pathfinding alogrithm
-	let	abs = Math.abs;
-	let	max = Math.max;
-	let	pow = Math.pow;
-	let	sqrt = Math.sqrt;
-
-    
-    let WalkableTileNum = 0 //since the world is represented by a bunch of 0 anything higher than 0 is block
-
-    let worldWidth = world[0].length //the mathematical width of the world is the length of the internal array which represents the x axis
-    let worldHeight = world.length//the mathematical height of the world is the length of the world array which is the same as the y axis
-    let worldSize = worldWidth * worldHeight //area of the world
-    //the mathematical representation of the world is now also defined
-    let distanceFunction = DistanceCalc
-    function DistanceCalc(Point, Goal)
-	{	// diagonals are considered a little farther than cardinal directions
-		// diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
-		// where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
-		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
-        
-        //return sqrt(pow(Point.x - Goal.x, 2) + pow(Point.y - Goal.y, 2));
-	}
-    let findNeighbours = DiagonalNeighboursFree
-
-    function Neighbours(x, y)
-	{
-		let	N = y - 1,
-		S = y + 1,
-		E = x + 1,
-		W = x - 1,
-		myN = N > -1 && canWalkHere(x, N),
-		myS = S < worldHeight && canWalkHere(x, S),
-		myE = E < worldWidth && canWalkHere(E, y),
-		myW = W > -1 && canWalkHere(W, y),
-		result = [];
-		if(myN)
-		result.push({x:x, y:N});
-		if(myE)
-		result.push({x:E, y:y});
-		if(myS)
-		result.push({x:x, y:S});
-		if(myW)
-		result.push({x:W, y:y});
-		findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
-		return result;
-	}
-
-    function DiagonalNeighboursFree(myN, myS, myE, myW, N, S, E, W, result)
-	{
-		myN = N > -1;
-		myS = S < worldHeight;
-		myE = E < worldWidth;
-		myW = W > -1;
-		if(myE)
-		{
-			if(myN && canWalkHere(E, N))
-			result.push({x:E, y:N});
-			if(myS && canWalkHere(E, S))
-			result.push({x:E, y:S});
-		}
-		if(myW)
-		{
-			if(myN && canWalkHere(W, N))
-			result.push({x:W, y:N});
-			if(myS && canWalkHere(W, S))
-			result.push({x:W, y:S});
-		}
-	}
-
-    //now we will define all of the different rule sets using math
-    function canWalkHere(x,y){
-        return(
-                (world[x] != null) &&//if the x coord is not empty
-                (world[x][y] != null) &&//if the y coord is not empty
-                (world[x][y] <= WalkableTileNum)//if the y coord is within the world
-        )
-        }
-
-    
-    function Node(Parent, Point){
-        let newNode = {
-			// pointer to another Node object
-			Parent:Parent,
-			// array index of this Node in the world linear array
-			value:Point.x + (Point.y * worldWidth),
-			// the location coordinates of this Node
-			x:Point.x,
-			y:Point.y,
-			// the heuristic estimated cost
-			// of an entire path using this node
-			f:0,
-			// the distanceFunction cost to get
-			// from the starting point to this node
-			g:0
-		};
-		return newNode;
-    }
-
-    function calculatePath(){
-        let tilePathStart = Node(null, {x:pathStart[0],y:pathStart[1]})//defines start node since this is the first node it does not have a parent node
-        let tilePathEnd = Node(null, {x:pathEnd[0],y:pathEnd[1]})//defines the end tile (also no parent node)
-
-        let AStar = Array(worldSize) // creates an array the size of the world (conatins all nodes in the world)
-
-        let Open = [tilePathStart] //Set of open tiles starts the start tile
-
-        let Closed = []//the list of known closed tiles starts empty
-
-        let result = []//final output array
-
-        let tileNeighbours//creates a variable to the tile neighbours will be defined later as search is done and neighbours are found
-
-        let tileNode
-        let tilePath
-
-        let length, max, min, i, j
-
-        while(length = Open.length){//iterate trhough the list of known open tiles
-            max = worldSize
-            min = -1
-            for(i=0;i<length;i++){
-                if(Open[i].f < max){
-                    max = Open[i].f
-                    min = i
-                }
-            }
-
-            tileNode = Open.splice(min, 1)[0]//defines knew node as node with lowest cost value (f)
-            if(tileNode.value === tilePathEnd.value){//check if destination has been reached
-                tilePath = Closed[Closed.push(tileNode) - 1]
-                do{
-                    result.push([tilePath.x, tilePath.y])
-                    console.log(result)
-                }
-                while(tilePath = tilePath.parent)
-                AStar = Closed = Open = []//clear the working arrays
-                result.reverse()//return start to finsih not finsih to start
-            }else{ //destination has not been reached
-                tileNeighbours = Neighbours(tileNode.x,tileNode.y)
-                for(i=0,j=tileNeighbours.length;i<j;i++){//loop through length of neighbours array (check every neighbour)
-                    tilePath = Node(tileNode,tileNeighbours[i])
-                    if(!AStar[tilePath.value]){
-                    tilePath.g = tileNode.g + distanceFunction(tileNeighbours[i],tileNode)//current cost of current route
-                    
-                    tilePath.f = tilePath.g + distanceFunction(tileNeighbours[i],tilePathEnd)//check cost of entire path
-
-                    Open.push(tilePath)//add the path to open to test
-
-                    AStar[tilePath.value] = true //mark this path as already having been visited
-                    }
-                }
-                Closed.push(tileNode)//add this node to be used in another potentially better path
-            }
-        }//keep working until entire open list is empty
-        return result
-    }
-    return calculatePath()
-}//Path has been found
- */
 
 DOMselectors.randomizeWorld.addEventListener('click', function(){
     console.log('Generating world... \n')
