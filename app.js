@@ -8,6 +8,7 @@ const DOMselectors = {
     barrier: document.getElementById('Barrier'),
     autopath: document.getElementById('autoPath'),
     delete: document.getElementById('Delete'),
+    corners: document.getElementById('corners'),
 
 }
 
@@ -25,9 +26,10 @@ let userSelection = null //globalize variable for which point the user has selec
 let autoPath = null
 let start = false
 let end = false
+let corners = false
 //size of world in units of tiles
-let worldWidth = 48
-let worldHeight = 16
+let worldWidth = 32
+let worldHeight = 12
 
 //size of each tile in pixels
 let tileWidth = 32
@@ -35,7 +37,6 @@ let tileHeight = 32
 
 //generate the start,end,and current of the path
 let pathStart = []
-console.log('initial path start ' + pathStart)
 let pathEnd = []
 let currentPath = []
 
@@ -82,21 +83,7 @@ function createWorld(){
 
     //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
-   //start to find an intial path   
-   
-/*    currentPath = [] //clear current path incase rerun
-   console.log('0 = ' + currentPath.length)
-   //while(currentPath.length === 0){ //randomly generate a start
-    pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	pathEnd = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	if (world[pathStart[0]][pathStart[1]] == 0){//in the event that the start and end are right next to each other than the solution has been found
-		currentPath = findPath(world,pathStart,pathEnd);
-	}
-   //}
-   //once a random start has been found
-   redraw()//continue to next function
- */
-
+   //start to find an intial path
 }
 function generate(){
     if(!referenceSheetloaded){ //if the reference sheet did not load then break b/c cannot draw
@@ -127,143 +114,34 @@ function generate(){
                         break;
             }
             ctx.drawImage(referenceSheet,
-                imageNum*tileWidth, 0,
-                tileWidth, tileHeight,
-                x*tileWidth, y*tileHeight,
-                tileWidth, tileHeight)
+                    imageNum*tileWidth, 0,
+                    tileWidth, tileHeight,
+                    x*tileWidth, y*tileHeight,
+                    tileWidth, tileHeight)
+            
+            
             // ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
         }//at this point the world has been drawn using the reference img
     }
 }
 
-function generatePath(){
+async function generatePath(){
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
     //while(currentPath.length === 0){ //randomly generate a start
     console.log('searching...')
     let currentPath = findPath(world, pathStart, pathEnd)//find the mathematical path
-    console.log(currentPath+'')
-    generate()//draw path
-    //now we will add an option to draw the path
-/*     if(autoPath===true){//auto 
-        pathStart = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	    pathEnd = [Math.floor(Math.random()*worldWidth),Math.floor(Math.random()*worldHeight)];
-	    console.log(pathStart + ' ' + pathEnd)
-        for(rp=0;rp<currentPath.length;rp++){//add button for this function
-            if(rp===0){
-                imageNum = 2 //start tile
-                
-            } else if(rp===currentPath.length-1){
-                imageNum = 3 //end tile
-            } else{
-                imageNum = 4 //path tile
-                
-            }
-            ctx.drawImage(referenceSheet,//draws the path on top of the img
-            imageNum*tileWidth, 0,
-            tileWidth, tileHeight,
-            currentPath[rp][0]*tileWidth,
-            currentPath[rp][1]*tileHeight,
-            tileWidth, tileHeight)
-        }
-    } else{
-        for(rp=0;rp<world.length;rp++){//add button for this function
-            if(world = 0){
-                imageNum = 2 //start tile
-
-            } else if(rp===currentPath.length-1 & userSelection==='endpoint'){
-                imageNum = 3 //end tile
-                
-            } else{
-                imageNum = 4 //path tile
-                
-            }
-            ctx.drawImage(referenceSheet,//draws the path on top of the img
-            imageNum*tileWidth, 0,
-            tileWidth, tileHeight,
-            currentPath[rp][0]*tileWidth,
-            currentPath[rp][1]*tileHeight,
-            tileWidth, tileHeight)
-        } */
-
-/*      switch(rp) this is same as above if else but using switch
-		{
-		case 0:
-			imageNum = 2; // start
-			break;
-		case currentPath.length-1:
-			imageNum = 3; // end
-			break;
-		default:
-			imageNum = 4; // path node
-			break;
-		} 
-
-    }*/
-}
-
-
-/* function redraw(){
-    if(!referenceSheetloaded){ //if the reference sheet did not load then break otherwise cannot draw
-        return
+    currentPath.reverse()
+    for(let i = 1;i<currentPath.length-1; i++){
+        let x = currentPath[i][0]
+        let y = currentPath[i][1]
+        world[x][y] = 4
+        generate()
+        await sleep(250)
     }
-    console.log('Drawing World...')
-    let imageNum = 0
-    ctx.fillStyle = '#000000'//set the world to be a white screen
-    ctx.fillRect(0,0,canvas.width,canvas.height)//clear the "math world" and set the array to be 0 again
     
-    for(x = 0;x<worldWidth;x++){
-        for(y=0;y<worldHeight;y++){
-            if(custom===false){
-            switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
-                    case 1:
-                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
-                        break;
-                    default:
-                        imageNum = 0;
-                        break;
-            }} else{
-                imageNum = 0
-                break
-            }
-            ctx.drawImage(referenceSheet,
-                imageNum*tileWidth, 0,
-                tileWidth, tileHeight,
-                x*tileWidth, y*tileHeight,
-                tileWidth, tileHeight)
-            // ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
-        }//at this point the world has been drawn using the reference img
-    }
-    console.log('Path length: ' + currentPath)
+}
     //now we will add an option to draw the path
-    for(rp=0;rp<currentPath.length;rp++){//add button for this function
-        if(rp===0){
-            imageNum = 2 //start tile
-            break
-        } else if(rp===currentPath.length-1){
-            imageNum = 3 //end tile
-        } else{
-            imageNum = 4 //path tile
-            break
-        }
-/*      switch(rp) this is same as above if else but using switch
-		{
-		case 0:
-			imageNum = 2; // start
-			break;
-		case currentPath.length-1:
-			imageNum = 3; // end
-			break;
-		default:
-			imageNum = 4; // path node
-			break;
-		} 
-        ctx.drawImage(referenceSheet,//draws the path on top of the img
-            imageNum*tileWidth, 0,
-            tileWidth, tileHeight,
-            currentPath[rp][0]*tileWidth,
-            currentPath[rp][1]*tileHeight,
-            tileWidth, tileHeight)
-    }
-} */
 //add function here to deal with using interactions (click events)
 function canvasClick(e){
     let x,y
@@ -323,6 +201,7 @@ function findPath(world, pathStart, pathEnd){
     dest = pathEnd
     ROW = worldWidth
     COL = worldHeight
+    let Path
     console.log('grid ' + grid + '\nsrc ' + src + '\ndest '+ dest)
 
 	class cell {
@@ -342,8 +221,7 @@ function findPath(world, pathStart, pathEnd){
         return (row >= 0) && (row < ROW) && (col >= 0) && (col < COL);
     }
     
-    // A Utility Function to check whether the given cell is
-    // blocked or not
+    // A Utility Function to check whether the given cell is blocked or not
     function isUnBlocked(grid, row, col){
         // Returns true if the cell is not blocked else false
         if (grid[row][col] == 0)
@@ -385,19 +263,17 @@ function findPath(world, pathStart, pathEnd){
             let temp_col = cellDetails[row][col].parent_j;
             row = temp_row;
             col = temp_col;
-            console.log(Path)
         }
     
         Path.push([row, col]);
-        returnpath = Path
-        console.log(returnpath + '')
+        console.log(Path)
 /*         while (Path.length > 0) {
             let p = Path[0];
             Path.shift();
             currentPath.push(p)
         } */
         
-        return;
+        return Path
     }
     
     // A Function to find the shortest path between
@@ -478,7 +354,6 @@ function findPath(world, pathStart, pathEnd){
         // We set this boolean value as false as initially
         // the destination is not reached.
         let foundDest = false;
-        console.log(openList)
         while (openList.size > 0) {
             let p = openList.entries().next().value
     
@@ -525,9 +400,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i - 1][j].parent_i = i;
                     cellDetails[i - 1][j].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path
                 }
                 // If the successor is already on the closed
                 // list or if it is blocked, then ignore it.
@@ -572,9 +447,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i + 1][j].parent_i = i;
                     cellDetails[i + 1][j].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
                 // If the successor is already on the closed
                 // list or if it is blocked, then ignore it.
@@ -618,9 +493,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i][j + 1].parent_i = i;
                     cellDetails[i][j + 1].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
     
                 // If the successor is already on the closed
@@ -666,9 +541,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i][j - 1].parent_i = i;
                     cellDetails[i][j - 1].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
     
                 // If the successor is already on the closed
@@ -703,6 +578,13 @@ function findPath(world, pathStart, pathEnd){
                 }
             }
     
+             
+            
+            
+            
+            
+            if(corners == true){
+            
             //----------- 5th Successor (North-East)
             //------------
     
@@ -715,9 +597,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i - 1][j + 1].parent_i = i;
                     cellDetails[i - 1][j + 1].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
     
                 // If the successor is already on the closed
@@ -764,9 +646,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i - 1][j - 1].parent_i = i;
                     cellDetails[i - 1][j - 1].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
     
                 // If the successor is already on the closed
@@ -812,9 +694,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i + 1][j + 1].parent_i = i;
                     cellDetails[i + 1][j + 1].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
     
                 // If the successor is already on the closed
@@ -861,9 +743,9 @@ function findPath(world, pathStart, pathEnd){
                     cellDetails[i + 1][j - 1].parent_i = i;
                     cellDetails[i + 1][j - 1].parent_j = j;
                     console.log("The destination cell is found\n");
-                    tracePath(cellDetails, dest);
+                    path = tracePath(cellDetails, dest);
                     foundDest = true;
-                    return;
+                    return path;
                 }
     
                 // If the successor is already on the closed
@@ -896,7 +778,11 @@ function findPath(world, pathStart, pathEnd){
                         cellDetails[i + 1][j - 1].parent_j = j;
                     }
                 }
-            }
+            } 
+        }
+        
+            
+            
         }
     
         // When the destination cell is not found and the open
@@ -906,11 +792,8 @@ function findPath(world, pathStart, pathEnd){
         // blockages)
         if (foundDest == false)
             console.log("Failed to find the Destination Cell\n");
-    
-        return;
     }
-    aStarSearch(grid,src,dest)
-    return currentPath
+    return aStarSearch(grid,src,dest)
 }
 
 DOMselectors.randomizeWorld.addEventListener('click', function(){
@@ -918,6 +801,43 @@ DOMselectors.randomizeWorld.addEventListener('click', function(){
     start = false
     end = false
     createWorld()
+})
+DOMselectors.corners.addEventListener('click', function(){
+    for(x = 0;x<worldWidth;x++){
+        for(y=0;y<worldHeight;y++){
+                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
+                    case 1:
+                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
+                        break;
+                    case 2:
+                        imageNum = 2 //start pnt
+                        break
+                    case 3:
+                        imageNum = 3 //end pnt
+                        break
+                    case 4:
+                        world[x][y] = 0
+                        imageNum = 4 //path tile
+                        break
+                    default:
+                        imageNum = 0 //empty tile    
+                        break;
+            }
+            ctx.drawImage(referenceSheet,
+                    imageNum*tileWidth, 0,
+                    tileWidth, tileHeight,
+                    x*tileWidth, y*tileHeight,
+                    tileWidth, tileHeight)
+            
+            
+            // ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
+        }//at this point the world has been drawn using the reference img
+    }
+    if(corners == true){
+        corners == false
+    }else{
+        corners == true
+    }
 })
 DOMselectors.startWorld.addEventListener('click', function(){
     console.log('Starting world...')
@@ -954,8 +874,8 @@ DOMselectors.delete.addEventListener('click', function(e){
         userSelection = 0
     }
 })
-DOMselectors.runSearch.addEventListener('click', function(){
-    generatePath()
+DOMselectors.runSearch.addEventListener('click', async function(){
+    await generatePath()
 })
 /* DOMselectors.autopath.addEventListener('click', function(){
     if(autopath.checked===true){
