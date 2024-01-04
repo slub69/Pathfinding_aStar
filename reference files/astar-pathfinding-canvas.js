@@ -81,6 +81,7 @@ function createWorld()
 		{
 			world[x][y] = 0;
 		}
+
 	}
 
 	// scatter some walls

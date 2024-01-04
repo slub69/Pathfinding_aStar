@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="main_container">
-      <p id="title">Welcome to my Pathfinding test</p>
+      <p id="title">Welcome to my Pathfinding Game</p>
       <h2 id="title2">Draw your map and select your points or randomize the world</h2>        
         <div class="UI">
           <div class='interaction ' id="initialWorld">
@@ -30,9 +30,17 @@
                 <input type="radio" id="Barrier" name="cursor_settings" value="barrier" />
                 <label for="Barrier">Barrier</label>
               </div>
+              <div class='interaction ' id="Delete">
+                <input type="radio" id="Delete" name="cursor_settings" value="barrier" />
+                <label for="Delete">Delete</label>
+              </div>
               <div class="interaction" id="random_btn">
                 <button type="button" id="random_btn" name="cursor_settings" id="random_btn">Randomize World</button>
               </div>
+<!--               <div class='interaction ' id="automaticPath">
+                <input type="checkbox" name="cursor_settings" id="autoPath"/>
+                <label for="autoPath">Auto Path</label>
+              </div> -->
               <div class='interaction ' id="run_search">
                 <button type="button" id="run_btn" name="cursor_settings">Run Search</button>
               </div>
