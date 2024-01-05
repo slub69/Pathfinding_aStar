@@ -9,6 +9,7 @@ const DOMselectors = {
     autopath: document.getElementById('autoPath'),
     delete: document.getElementById('Delete'),
     corners: document.getElementById('corners'),
+    pathClear: document.getElementById('pathClear')
 
 }
 
@@ -27,6 +28,7 @@ let autoPath = null
 let start = false
 let end = false
 let corners = false
+let imageNum
 //size of world in units of tiles
 let worldWidth = 32
 let worldHeight = 12
@@ -368,13 +370,13 @@ function findPath(world, pathStart, pathEnd){
             /*
             Generating all the 8 successor of this cell
     
-                N.W N N.E
-                \ | /
+                  N.W N N.E
+                    \ | /
                     \ | /
                 W----Cell----E
                     / | \
                     / | \
-                S.W S S.E
+                  S.W S S.E
     
             Cell-->Popped Cell (i, j)
             N --> North	 (i-1, j)
@@ -584,205 +586,204 @@ function findPath(world, pathStart, pathEnd){
             
             
             if(corners == true){
-            
-            //----------- 5th Successor (North-East)
-            //------------
-    
-            // Only process this cell if this is a valid one
-            if (isValid(i - 1, j + 1) == true) {
-                // If the destination cell is the same as the
-                // current successor
-                if (isDestination(i - 1, j + 1, dest, grid) == true) {
-                    // Set the Parent of the destination cell
-                    cellDetails[i - 1][j + 1].parent_i = i;
-                    cellDetails[i - 1][j + 1].parent_j = j;
-                    console.log("The destination cell is found\n");
-                    path = tracePath(cellDetails, dest);
-                    foundDest = true;
-                    return path;
-                }
-    
-                // If the successor is already on the closed
-                // list or if it is blocked, then ignore it.
-                // Else do the following
-                else if (closedList[i - 1][j + 1] == false
-                        && isUnBlocked(grid, i - 1, j + 1)
-                                == true) {
-                    gNew = cellDetails[i][j].g + 1.414;
-                    hNew = calculateHValue(i - 1, j + 1, dest);
-                    fNew = gNew + hNew;
-    
-                    // If it isn’t on the open list, add it to
-                    // the open list. Make the current square
-                    // the parent of this square. Record the
-                    // f, g, and h costs of the square cell
-                    //			 OR
-                    // If it is on the open list already, check
-                    // to see if this path to that square is
-                    // better, using 'f' cost as the measure.
-                    if (cellDetails[i - 1][j + 1].f == 2147483647
-                        || cellDetails[i - 1][j + 1].f > fNew) {
-                        openList.set(fNew, [i - 1, j + 1]);
-    
-                        // Update the details of this cell
-                        cellDetails[i - 1][j + 1].f = fNew;
-                        cellDetails[i - 1][j + 1].g = gNew;
-                        cellDetails[i - 1][j + 1].h = hNew;
+                console.log('Corners selected')
+                //----------- 5th Successor (North-East)
+        
+                // Only process this cell if this is a valid one
+                if (isValid(i - 1, j + 1) == true) {
+                    // If the destination cell is the same as the
+                    // current successor
+                    if (isDestination(i - 1, j + 1, dest, grid) == true) {
+                        // Set the Parent of the destination cell
                         cellDetails[i - 1][j + 1].parent_i = i;
                         cellDetails[i - 1][j + 1].parent_j = j;
+                        console.log("The destination cell is found\n");
+                        path = tracePath(cellDetails, dest);
+                        foundDest = true;
+                        return path;
+                    }
+        
+                    // If the successor is already on the closed
+                    // list or if it is blocked, then ignore it.
+                    // Else do the following
+                    else if (closedList[i - 1][j + 1] == false
+                            && isUnBlocked(grid, i - 1, j + 1)
+                                    == true) {
+                        gNew = cellDetails[i][j].g + 1.414;
+                        hNew = calculateHValue(i - 1, j + 1, dest);
+                        fNew = gNew + hNew;
+        
+                        // If it isn’t on the open list, add it to
+                        // the open list. Make the current square
+                        // the parent of this square. Record the
+                        // f, g, and h costs of the square cell
+                        //			 OR
+                        // If it is on the open list already, check
+                        // to see if this path to that square is
+                        // better, using 'f' cost as the measure.
+                        if (cellDetails[i - 1][j + 1].f == 2147483647
+                            || cellDetails[i - 1][j + 1].f > fNew) {
+                            openList.set(fNew, [i - 1, j + 1]);
+        
+                            // Update the details of this cell
+                            cellDetails[i - 1][j + 1].f = fNew;
+                            cellDetails[i - 1][j + 1].g = gNew;
+                            cellDetails[i - 1][j + 1].h = hNew;
+                            cellDetails[i - 1][j + 1].parent_i = i;
+                            cellDetails[i - 1][j + 1].parent_j = j;
+                        }
                     }
                 }
-            }
-    
-            //----------- 6th Successor (North-West)
-            //------------
-    
-            // Only process this cell if this is a valid one
-            if (isValid(i - 1, j - 1) == true) {
-                // If the destination cell is the same as the
-                // current successor
-                if (isDestination(i - 1, j - 1, dest, grid) == true) {
-                    // Set the Parent of the destination cell
-                    cellDetails[i - 1][j - 1].parent_i = i;
-                    cellDetails[i - 1][j - 1].parent_j = j;
-                    console.log("The destination cell is found\n");
-                    path = tracePath(cellDetails, dest);
-                    foundDest = true;
-                    return path;
-                }
-    
-                // If the successor is already on the closed
-                // list or if it is blocked, then ignore it.
-                // Else do the following
-                else if (closedList[i - 1][j - 1] == false
-                        && isUnBlocked(grid, i - 1, j - 1)
-                                == true) {
-                    gNew = cellDetails[i][j].g + 1.414;
-                    hNew = calculateHValue(i - 1, j - 1, dest);
-                    fNew = gNew + hNew;
-    
-                    // If it isn’t on the open list, add it to
-                    // the open list. Make the current square
-                    // the parent of this square. Record the
-                    // f, g, and h costs of the square cell
-                    //			 OR
-                    // If it is on the open list already, check
-                    // to see if this path to that square is
-                    // better, using 'f' cost as the measure.
-                    if (cellDetails[i - 1][j - 1].f == 2147483647
-                        || cellDetails[i - 1][j - 1].f > fNew) {
-                        openList.set(fNew, [i - 1, j - 1]);
-                        // Update the details of this cell
-                        cellDetails[i - 1][j - 1].f = fNew;
-                        cellDetails[i - 1][j - 1].g = gNew;
-                        cellDetails[i - 1][j - 1].h = hNew;
+        
+                //----------- 6th Successor (North-West)
+                //------------
+        
+                // Only process this cell if this is a valid one
+                if (isValid(i - 1, j - 1) == true) {
+                    // If the destination cell is the same as the
+                    // current successor
+                    if (isDestination(i - 1, j - 1, dest, grid) == true) {
+                        // Set the Parent of the destination cell
                         cellDetails[i - 1][j - 1].parent_i = i;
                         cellDetails[i - 1][j - 1].parent_j = j;
+                        console.log("The destination cell is found\n");
+                        path = tracePath(cellDetails, dest);
+                        foundDest = true;
+                        return path;
+                    }
+        
+                    // If the successor is already on the closed
+                    // list or if it is blocked, then ignore it.
+                    // Else do the following
+                    else if (closedList[i - 1][j - 1] == false
+                            && isUnBlocked(grid, i - 1, j - 1)
+                                    == true) {
+                        gNew = cellDetails[i][j].g + 1.414;
+                        hNew = calculateHValue(i - 1, j - 1, dest);
+                        fNew = gNew + hNew;
+        
+                        // If it isn’t on the open list, add it to
+                        // the open list. Make the current square
+                        // the parent of this square. Record the
+                        // f, g, and h costs of the square cell
+                        //			 OR
+                        // If it is on the open list already, check
+                        // to see if this path to that square is
+                        // better, using 'f' cost as the measure.
+                        if (cellDetails[i - 1][j - 1].f == 2147483647
+                            || cellDetails[i - 1][j - 1].f > fNew) {
+                            openList.set(fNew, [i - 1, j - 1]);
+                            // Update the details of this cell
+                            cellDetails[i - 1][j - 1].f = fNew;
+                            cellDetails[i - 1][j - 1].g = gNew;
+                            cellDetails[i - 1][j - 1].h = hNew;
+                            cellDetails[i - 1][j - 1].parent_i = i;
+                            cellDetails[i - 1][j - 1].parent_j = j;
+                        }
                     }
                 }
-            }
-    
-            //----------- 7th Successor (South-East)
-            //------------
-    
-            // Only process this cell if this is a valid one
-            if (isValid(i + 1, j + 1) == true) {
-                // If the destination cell is the same as the
-                // current successor
-                if (isDestination(i + 1, j + 1, dest, grid) == true) {
-                    // Set the Parent of the destination cell
-                    cellDetails[i + 1][j + 1].parent_i = i;
-                    cellDetails[i + 1][j + 1].parent_j = j;
-                    console.log("The destination cell is found\n");
-                    path = tracePath(cellDetails, dest);
-                    foundDest = true;
-                    return path;
-                }
-    
-                // If the successor is already on the closed
-                // list or if it is blocked, then ignore it.
-                // Else do the following
-                else if (closedList[i + 1][j + 1] == false
-                        && isUnBlocked(grid, i + 1, j + 1)
-                                == true) {
-                    gNew = cellDetails[i][j].g + 1.414;
-                    hNew = calculateHValue(i + 1, j + 1, dest);
-                    fNew = gNew + hNew;
-    
-                    // If it isn’t on the open list, add it to
-                    // the open list. Make the current square
-                    // the parent of this square. Record the
-                    // f, g, and h costs of the square cell
-                    //			 OR
-                    // If it is on the open list already, check
-                    // to see if this path to that square is
-                    // better, using 'f' cost as the measure.
-                    if (cellDetails[i + 1][j + 1].f == 2147483647
-                        || cellDetails[i + 1][j + 1].f > fNew) {
-                        openList.set(fNew, [i + 1, j + 1]);
-    
-                        // Update the details of this cell
-                        cellDetails[i + 1][j + 1].f = fNew;
-                        cellDetails[i + 1][j + 1].g = gNew;
-                        cellDetails[i + 1][j + 1].h = hNew;
+        
+                //----------- 7th Successor (South-East)
+                //------------
+        
+                // Only process this cell if this is a valid one
+                if (isValid(i + 1, j + 1) == true) {
+                    // If the destination cell is the same as the
+                    // current successor
+                    if (isDestination(i + 1, j + 1, dest, grid) == true) {
+                        // Set the Parent of the destination cell
                         cellDetails[i + 1][j + 1].parent_i = i;
                         cellDetails[i + 1][j + 1].parent_j = j;
+                        console.log("The destination cell is found\n");
+                        path = tracePath(cellDetails, dest);
+                        foundDest = true;
+                        return path;
+                    }
+        
+                    // If the successor is already on the closed
+                    // list or if it is blocked, then ignore it.
+                    // Else do the following
+                    else if (closedList[i + 1][j + 1] == false
+                            && isUnBlocked(grid, i + 1, j + 1)
+                                    == true) {
+                        gNew = cellDetails[i][j].g + 1.414;
+                        hNew = calculateHValue(i + 1, j + 1, dest);
+                        fNew = gNew + hNew;
+        
+                        // If it isn’t on the open list, add it to
+                        // the open list. Make the current square
+                        // the parent of this square. Record the
+                        // f, g, and h costs of the square cell
+                        //			 OR
+                        // If it is on the open list already, check
+                        // to see if this path to that square is
+                        // better, using 'f' cost as the measure.
+                        if (cellDetails[i + 1][j + 1].f == 2147483647
+                            || cellDetails[i + 1][j + 1].f > fNew) {
+                            openList.set(fNew, [i + 1, j + 1]);
+        
+                            // Update the details of this cell
+                            cellDetails[i + 1][j + 1].f = fNew;
+                            cellDetails[i + 1][j + 1].g = gNew;
+                            cellDetails[i + 1][j + 1].h = hNew;
+                            cellDetails[i + 1][j + 1].parent_i = i;
+                            cellDetails[i + 1][j + 1].parent_j = j;
+                        }
                     }
                 }
-            }
-    
-            //----------- 8th Successor (South-West)
-            //------------
-    
-            // Only process this cell if this is a valid one
-            if (isValid(i + 1, j - 1) == true) {
-                // If the destination cell is the same as the
-                // current successor
-                if (isDestination(i + 1, j - 1, dest, grid) == true) {
-                    // Set the Parent of the destination cell
-                    cellDetails[i + 1][j - 1].parent_i = i;
-                    cellDetails[i + 1][j - 1].parent_j = j;
-                    console.log("The destination cell is found\n");
-                    path = tracePath(cellDetails, dest);
-                    foundDest = true;
-                    return path;
-                }
-    
-                // If the successor is already on the closed
-                // list or if it is blocked, then ignore it.
-                // Else do the following
-                else if (closedList[i + 1][j - 1] == false
-                        && isUnBlocked(grid, i + 1, j - 1)
-                                == true) {
-                    gNew = cellDetails[i][j].g + 1.414;
-                    hNew = calculateHValue(i + 1, j - 1, dest);
-                    fNew = gNew + hNew;
-    
-                    // If it isn’t on the open list, add it to
-                    // the open list. Make the current square
-                    // the parent of this square. Record the
-                    // f, g, and h costs of the square cell
-                    //			 OR
-                    // If it is on the open list already, check
-                    // to see if this path to that square is
-                    // better, using 'f' cost as the measure.
-                    if (cellDetails[i + 1][j - 1].f == 2147483647
-                        || cellDetails[i + 1][j - 1].f > fNew) {
-                        openList.set(fNew, [i + 1, j - 1]);
-    
-                        // Update the details of this cell
-                        cellDetails[i + 1][j - 1].f = fNew;
-                        cellDetails[i + 1][j - 1].g = gNew;
-                        cellDetails[i + 1][j - 1].h = hNew;
+        
+                //----------- 8th Successor (South-West)
+                //------------
+        
+                // Only process this cell if this is a valid one
+                if (isValid(i + 1, j - 1) == true) {
+                    // If the destination cell is the same as the
+                    // current successor
+                    if (isDestination(i + 1, j - 1, dest, grid) == true) {
+                        // Set the Parent of the destination cell
                         cellDetails[i + 1][j - 1].parent_i = i;
                         cellDetails[i + 1][j - 1].parent_j = j;
+                        console.log("The destination cell is found\n");
+                        path = tracePath(cellDetails, dest);
+                        foundDest = true;
+                        return path;
                     }
-                }
-            } 
-        }
         
+                    // If the successor is already on the closed
+                    // list or if it is blocked, then ignore it.
+                    // Else do the following
+                    else if (closedList[i + 1][j - 1] == false
+                            && isUnBlocked(grid, i + 1, j - 1)
+                                    == true) {
+                        gNew = cellDetails[i][j].g + 1.414;
+                        hNew = calculateHValue(i + 1, j - 1, dest);
+                        fNew = gNew + hNew;
+        
+                        // If it isn’t on the open list, add it to
+                        // the open list. Make the current square
+                        // the parent of this square. Record the
+                        // f, g, and h costs of the square cell
+                        //			 OR
+                        // If it is on the open list already, check
+                        // to see if this path to that square is
+                        // better, using 'f' cost as the measure.
+                        if (cellDetails[i + 1][j - 1].f == 2147483647
+                            || cellDetails[i + 1][j - 1].f > fNew) {
+                            openList.set(fNew, [i + 1, j - 1]);
+        
+                            // Update the details of this cell
+                            cellDetails[i + 1][j - 1].f = fNew;
+                            cellDetails[i + 1][j - 1].g = gNew;
+                            cellDetails[i + 1][j - 1].h = hNew;
+                            cellDetails[i + 1][j - 1].parent_i = i;
+                            cellDetails[i + 1][j - 1].parent_j = j;
+                        }
+                    }
+                } 
+            }
             
-            
+                
+                
         }
     
         // When the destination cell is not found and the open
@@ -801,6 +802,29 @@ DOMselectors.randomizeWorld.addEventListener('click', function(){
     start = false
     end = false
     createWorld()
+})
+DOMselectors.pathClear.addEventListener('click', function(){
+    for(x = 0;x<worldWidth;x++){
+        for(y=0;y<worldHeight;y++){
+                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
+                    case 1:
+                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
+                        break;
+                    case 2 || 3 || 4:
+                        imageNum = 0 //start pnt
+                        world[x][y] = 0
+                    default:
+                        imageNum = 0 //empty tile    
+                        break;
+            }
+            ctx.drawImage(referenceSheet,
+                    imageNum*tileWidth, 0,
+                    tileWidth, tileHeight,
+                    x*tileWidth, y*tileHeight,
+                    tileWidth, tileHeight)
+            }
+        }
+    userSelection = 0
 })
 DOMselectors.corners.addEventListener('click', function(){
     for(x = 0;x<worldWidth;x++){
