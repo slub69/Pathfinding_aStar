@@ -14,11 +14,17 @@
           <div class='interaction ' id="initialWorld">
             <button type="button" id="start_btn" name="cursor_settings">Start World</button>
           </div>
+          <div class="generation">
        <div class="interaction" id="CustomOrNah">
-            <input type="checkbox" name="cursor_settings" id="checkbox">
+            <input type="radio" name="cursor_settings" id="checkbox">
             <label for="checkbox">Generate World</label>
           </div> 
-
+          <div class='interaction ' id="mazebox">
+            <input type="radio" name="cursor_settings" id="checkmaze">
+            <label for="checkmaze">Generate a Maze</label>
+          </div>
+        </div>
+        <div class="interactors">
             <div class='interaction ' id="Origin">
                 <input type="radio" id="Origin" name="cursor_settings" value="start" />
                 <label for="Origin">Origin Point</label>
@@ -31,6 +37,7 @@
                 <input type="radio" id="Barrier" name="cursor_settings" value="barrier" />
                 <label for="Barrier">Barrier</label>
               </div>
+            </div>
               <div class='interaction ' id="Delete">
                 <input type="radio" id="Delete" name="cursor_settings" value="barrier" />
                 <label for="Delete">Delete</label>
@@ -45,6 +52,7 @@
                 <input type="checkbox" name="cursor_settings" id="corners">
                 <label for="corners">Diagonals</label>
               </div>
+
               <div class='interaction ' id="run_search">
                 <button type="button" id="run_btn" name="cursor_settings">Run Search</button>
               </div>

@@ -9,7 +9,8 @@ const DOMselectors = {
     autopath: document.getElementById('autoPath'),
     delete: document.getElementById('Delete'),
     corners: document.getElementById('corners'),
-    pathClear: document.getElementById('pathClear')
+    pathClear: document.getElementById('pathClear'),
+    drawMaze: document.getElementById('checkmaze'),
 
 }
 
@@ -885,14 +886,10 @@ DOMselectors.startWorld.addEventListener('click', function(){
     console.log('Starting world...')
     onload()
 })
- DOMselectors.checkbox.addEventListener('click', function(){
-    if(checkbox.checked===true){
+ DOMselectors.checkbox.addEventListener('click', function(e){
+    if(e.target.checked===true){
         create = true
-    } else{
-        create = false
     }
-    console.log(checkbox.checked)
-
 }) 
 DOMselectors.origin.addEventListener('click', function(e){
     if(e.target.checked===true){
@@ -921,6 +918,34 @@ DOMselectors.runSearch.addEventListener('click', async function(){
         deletePath()
     }
     await generatePath()
+})
+function generateMaze(){
+    function Maze(rows, cols) {
+        const maze = [];
+        for (let i = 0; i < rows; i++) {
+            const row = [];
+            for (let j = 0; j < cols; j++) {
+                row.push(Math.floor(Math.random() * 2)); // 0 or 1
+            }
+            maze.push(row);
+        }
+        return maze;
+    }
+    
+    const maze100x100 = Maze(100, 100);
+    
+    // Log the maze (optional)
+    for (let i = 0; i < maze100x100.length; i++) {
+        console.log(maze100x100[i].join(' '));
+    }
+    
+    
+}
+DOMselectors.drawMaze.addEventListener('click', function(e){
+    if(e.target.checked===true){
+        create = false
+        world = generateMaze()
+    }
 })
 /* DOMselectors.autopath.addEventListener('click', function(){
     if(autopath.checked===true){
