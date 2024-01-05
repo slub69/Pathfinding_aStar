@@ -27,11 +27,12 @@ let userSelection = null //globalize variable for which point the user has selec
 let autoPath = null
 let start = false
 let end = false
-let corners = false
+let cornering = null
 let imageNum
+let existingPath = false
 //size of world in units of tiles
-let worldWidth = 32
-let worldHeight = 12
+let worldWidth = parseInt(prompt('Input your desired world WIDTH in tiles\nRecommended is 32'))
+let worldHeight =  parseInt(prompt('Input your desired world HEIGHT in tiles\nRecommended is 16'))
 
 //size of each tile in pixels
 let tileWidth = 32
@@ -139,7 +140,7 @@ async function generatePath(){
         let y = currentPath[i][1]
         world[x][y] = 4
         generate()
-        await sleep(250)
+        await sleep(100)
     }
     
 }
@@ -585,7 +586,7 @@ function findPath(world, pathStart, pathEnd){
             
             
             
-            if(corners == true){
+            if(cornering == true){
                 console.log('Corners selected')
                 //----------- 5th Successor (North-East)
         
@@ -791,8 +792,13 @@ function findPath(world, pathStart, pathEnd){
         // reach the destination cell. This may happen when the
         // there is no way to destination cell (due to
         // blockages)
-        if (foundDest == false)
+        if (foundDest == false){
+            existingPath = false        
             console.log("Failed to find the Destination Cell\n");
+            alert("Destination is unreachable in the current state")
+        }else{
+            existingPath = true
+        }
     }
     return aStarSearch(grid,src,dest)
 }
@@ -806,17 +812,24 @@ DOMselectors.randomizeWorld.addEventListener('click', function(){
 DOMselectors.pathClear.addEventListener('click', function(){
     for(x = 0;x<worldWidth;x++){
         for(y=0;y<worldHeight;y++){
-                switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
-                    case 1:
-                        imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
-                        break;
-                    case 2 || 3 || 4:
-                        imageNum = 0 //start pnt
-                        world[x][y] = 0
-                    default:
-                        imageNum = 0 //empty tile    
-                        break;
-            }
+            switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
+                case 1:
+                    imageNum = 1; //the sprite num will be used throughout to pull the images from the reference image
+                    break;
+                case 2:
+                    imageNum = 2 //start pnt
+                    break
+                case 3:
+                    imageNum = 3 //end pnt
+                    break
+                case 4:
+                    imageNum = 0 //path tile
+                    world[x][y] = 0
+                    break
+                default:
+                    imageNum = 0 //empty tile    
+                    break;
+        }
             ctx.drawImage(referenceSheet,
                     imageNum*tileWidth, 0,
                     tileWidth, tileHeight,
@@ -824,9 +837,10 @@ DOMselectors.pathClear.addEventListener('click', function(){
                     tileWidth, tileHeight)
             }
         }
+    console.log(world+"")
     userSelection = 0
 })
-DOMselectors.corners.addEventListener('click', function(){
+function deletePath(){
     for(x = 0;x<worldWidth;x++){
         for(y=0;y<worldHeight;y++){
                 switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
@@ -857,11 +871,15 @@ DOMselectors.corners.addEventListener('click', function(){
                     tileWidth, tileHeight)
             }
         }
-    if(corners == true){
-        corners == false
-    }else{
-        corners == true
+}
+DOMselectors.corners.addEventListener('click', function(){
+    if(corners.checked == true){
+        cornering = true
+    } else{
+        cornering = false
     }
+    console.log(corners.checked)
+    deletePath()
 })
 DOMselectors.startWorld.addEventListener('click', function(){
     console.log('Starting world...')
@@ -899,6 +917,9 @@ DOMselectors.delete.addEventListener('click', function(e){
     }
 })
 DOMselectors.runSearch.addEventListener('click', async function(){
+    if(existingPath == true){
+        deletePath()
+    }
     await generatePath()
 })
 /* DOMselectors.autopath.addEventListener('click', function(){
