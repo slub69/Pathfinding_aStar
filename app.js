@@ -1,4 +1,6 @@
 const DOMselectors = {
+    mazeinator: document.getElementById('mazeinator'),
+    randinator: document.getElementById('randinator'),
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
     startWorld: document.getElementById('start_btn'),
@@ -253,8 +255,7 @@ function findPath(world, pathStart, pathEnd){
     }
     
     // A Utility Function to trace the path from the source to destination
-    function tracePath(cellDetails, dest)
-    {
+    function tracePath(cellDetails, dest){
         console.log("The Path is ");
         let row = dest[0];
         let col = dest[1];
@@ -270,13 +271,7 @@ function findPath(world, pathStart, pathEnd){
         }
     
         Path.push([row, col]);
-        console.log(Path)
-/*         while (Path.length > 0) {
-            let p = Path[0];
-            Path.shift();
-            currentPath.push(p)
-        } */
-        
+        console.log(Path)      
         return Path
     }
     
@@ -358,7 +353,7 @@ function findPath(world, pathStart, pathEnd){
         // We set this boolean value as false as initially
         // the destination is not reached.
         let foundDest = false;
-        while (openList.size > 0) {
+        while (openList.size > 0){
             let p = openList.entries().next().value
     
             // Remove this vertex from the open list
@@ -886,7 +881,7 @@ DOMselectors.startWorld.addEventListener('click', function(){
     console.log('Starting world...')
     onload()
 })
- DOMselectors.checkbox.addEventListener('click', function(e){
+DOMselectors.checkbox.addEventListener('click', function(e){
     if(e.target.checked===true){
         create = true
     }
@@ -919,38 +914,4 @@ DOMselectors.runSearch.addEventListener('click', async function(){
     }
     await generatePath()
 })
-function generateMaze(){
-    function Maze(rows, cols) {
-        const maze = [];
-        for (let i = 0; i < rows; i++) {
-            const row = [];
-            for (let j = 0; j < cols; j++) {
-                row.push(Math.floor(Math.random() * 2)); // 0 or 1
-            }
-            maze.push(row);
-        }
-        return maze;
-    }
-    
-    const maze100x100 = Maze(100, 100);
-    
-    // Log the maze (optional)
-    for (let i = 0; i < maze100x100.length; i++) {
-        console.log(maze100x100[i].join(' '));
-    }
-    
-    
-}
-DOMselectors.drawMaze.addEventListener('click', function(e){
-    if(e.target.checked===true){
-        create = false
-        world = generateMaze()
-    }
-})
-/* DOMselectors.autopath.addEventListener('click', function(){
-    if(autopath.checked===true){
-        autoPath = true
-    } else{
-        autoPath = false
-    }
-    console.log(checkbox.checked)}) */
+DOMselectors.mazeinator
