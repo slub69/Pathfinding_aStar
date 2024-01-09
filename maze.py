@@ -240,7 +240,7 @@ class WilsonMazeGenerator:
 
 ################
                 
-gen = WilsonMazeGenerator(32,16)
+gen = WilsonMazeGenerator(25,25)
 gen.generate_maze()
 gen.solve_maze()
 with open('transfer.txt', 'w') as file:
