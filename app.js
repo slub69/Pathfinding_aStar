@@ -35,8 +35,8 @@ let cornering = null
 let imageNum
 let existingPath = false
 //size of world in units of tiles
-let worldWidth = parseInt(prompt('Input your desired world WIDTH in tiles\nRecommended is 32'))
-let worldHeight =  parseInt(prompt('Input your desired world HEIGHT in tiles\nRecommended is 16'))
+let worldWidth = null
+let worldHeight = null
 
 //size of each tile in pixels
 let tileWidth = 32
@@ -72,11 +72,7 @@ function loaded(){//function that lets user and code know that the image has bee
 }
 function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
-    
-    var fs = require('fs')
-    fs.readFile('transfer.txt', 'utf8', (err,data)=>{
-        world = data
-    })
+
     
     /* for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
             world[x] = []//set each element of world to be empty (creates an empty world)

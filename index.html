@@ -8,17 +8,6 @@
 </head>
 <body>
     <div class="main_container">
-      <div class="main_choice">
-        <div class="UI">
-          <div class='interaction' id="rando">
-            <input type="radio" name="main_selection" id="randinator">
-            <label for="randinator">Randinator</label>
-          <div class="generation">
-          <div class="interaction" id="mazer">
-            <input type="radio" name="main_selection" id="mazeinator">
-            <label for="mazeinator">Mazeinator</label>
-          </div>
-      </div>
       <p id="title">Welcome to my Pathfinding Game</p>
       <h2 id="title2">Draw your map and select your points or randomize the world</h2>        
         <div class="UI">
@@ -30,10 +19,10 @@
             <input type="radio" name="cursor_settings" id="checkbox">
             <label for="checkbox">Generate World</label>
           </div> 
-          <div class='interaction ' id="mazebox">
-            <input type="radio" name="cursor_settings" id="checkmaze">
-            <label for="checkmaze">Generate a Maze</label>
-          </div>
+        </div>
+        <div class='interaction'> 
+          <input type="number" id="width">
+          <label for="width">Width</label>
         </div>
         <div class="interactors">
             <div class='interaction ' id="Origin">
