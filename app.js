@@ -1,7 +1,5 @@
 
 const DOMselectors = {
-    mazeinator: document.getElementById('mazeinator'),
-    randinator: document.getElementById('randinator'),
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
     startWorld: document.getElementById('start_btn'),
@@ -13,8 +11,8 @@ const DOMselectors = {
     delete: document.getElementById('Delete'),
     corners: document.getElementById('corners'),
     pathClear: document.getElementById('pathClear'),
-    drawMaze: document.getElementById('checkmaze'),
-
+    inputWidth: document.getElementById('width'),
+    inputHeight: document.getElementById('height'),
 }
 
 
@@ -26,7 +24,7 @@ let referenceSheet = null //call in reference for images
 let referenceSheetloaded = false //set a variable to give the status of the reference image
 let world = [[]] //generate a 2d array for the world
 
-let create = null //globalize variable for custom world or nah (originially used for start up but not used anymore)
+let create = true //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
 let autoPath = null
 let start = false
@@ -35,8 +33,8 @@ let cornering = null
 let imageNum
 let existingPath = false
 //size of world in units of tiles
-let worldWidth = null
-let worldHeight = null
+let worldWidth,worldHeight
+
 
 //size of each tile in pixels
 let tileWidth = 32
@@ -72,9 +70,7 @@ function loaded(){//function that lets user and code know that the image has bee
 }
 function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
-
-    
-    /* for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
+    for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
             world[x] = []//set each element of world to be empty (creates an empty world)
             for(y=0;y<worldHeight;y++){//same thing as for world width but now for height so the world is 2d
                 world[x][y] = 0 // set the array inside the array to be empty
@@ -88,9 +84,7 @@ function createWorld(){
                     }
 	            }
             }
- */
-
-    //at this point we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
+    //at thispoint we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
    //start to find an intial path
 }
@@ -100,9 +94,9 @@ function generate(){
     }
     console.log('World: ' + world)
     console.log('drawing...')
-    let imageNum = 0
+    let imageNum = 0 //default image is blank tile
     ctx.fillStyle = '#000000'//set the world to be a black screen
-    ctx.fillRect(0,0,canvas.width,canvas.height)//clear the "math world" and set the array to be 0 again
+    ctx.fillRect(0,0,canvas.width,canvas.height)
     for(x = 0;x<worldWidth;x++){
         for(y=0;y<worldHeight;y++){
                 switch(world[x][y]){//set up a function for world to be "true or false" if true than sprite num is 0 and the sx , sy = 0 (special case)
@@ -135,19 +129,29 @@ function generate(){
 }
 
 async function generatePath(){
-
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-    //while(currentPath.length === 0){ //randomly generate a start
     console.log('searching...')
     let currentPath = findPath(world, pathStart, pathEnd)//find the mathematical path
     currentPath.reverse()
-    for(let i = 1;i<currentPath.length-1; i++){
+/*     let i = 1
+    while(currentPath.length != 0){
         let x = currentPath[i][0]
         let y = currentPath[i][1]
         world[x][y] = 4
+        console.log(world)
         generate()
-        await sleep(100)
-    }
+        await sleep(0)
+        i++
+        currentPath.pop()
+    } */
+/*     for(let i = 1; i < (currentPath.length-1) ; i++){
+        let x = currentPath[i][0]
+        let y = currentPath[i][1]
+        world[x][y] = 4
+        console.log(world)
+        generate()
+        await sleep(0)
+    } */
     
 }
     //now we will add an option to draw the path
@@ -882,13 +886,10 @@ DOMselectors.corners.addEventListener('click', function(){
 })
 DOMselectors.startWorld.addEventListener('click', function(){
     console.log('Starting world...')
+    worldWidth = parseInt(DOMselectors.inputWidth.value)
+    worldHeight = parseInt(DOMselectors.inputHeight.value)
     onload()
 })
-DOMselectors.checkbox.addEventListener('click', function(e){
-    if(e.target.checked===true){
-        create = true
-    }
-}) 
 DOMselectors.origin.addEventListener('click', function(e){
     if(e.target.checked===true){
         userSelection = 2
