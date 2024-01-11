@@ -129,10 +129,13 @@ function generate(){
 }
 
 async function generatePath(){
+    deletePath()
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     console.log('searching...')
     let currentPath = findPath(world, pathStart, pathEnd)//find the mathematical path
     currentPath.reverse()
+    console.log("The Path is " + currentPath);
+
 /*     let i = 1
     while(currentPath.length != 0){
         let x = currentPath[i][0]
@@ -144,14 +147,14 @@ async function generatePath(){
         i++
         currentPath.pop()
     } */
-/*     for(let i = 1; i < (currentPath.length-1) ; i++){
+    for(let i = 1; i < (currentPath.length-1) ; i++){
         let x = currentPath[i][0]
         let y = currentPath[i][1]
         world[x][y] = 4
         console.log(world)
         generate()
         await sleep(0)
-    } */
+    }
     
 }
     //now we will add an option to draw the path
@@ -263,7 +266,6 @@ function findPath(world, pathStart, pathEnd){
     
     // A Utility Function to trace the path from the source to destination
     function tracePath(cellDetails, dest){
-        console.log("The Path is ");
         let row = dest[0];
         let col = dest[1];
     
