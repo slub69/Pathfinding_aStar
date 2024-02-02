@@ -1,4 +1,3 @@
-
 const DOMselectors = {
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
@@ -15,7 +14,14 @@ const DOMselectors = {
     inputHeight: document.getElementById('height'),
 }
 
+const readFile = async()=> {
+    let file = await fetch('test.txt')
+    let content = await file.text()
+    console.log(content)
+    return content
+}
 
+readFile()
 
 //start by defining all global variables as empty
 let canvas = null //define world, call it canvas

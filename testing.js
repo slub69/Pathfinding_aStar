@@ -1,10 +1,10 @@
 var fs = require("fs"); 
 console.log(" Writing into an file "); 
-
+worldheight = 100
 // Sample.txt is an empty file 
 fs.writeFile( 
 "sample.txt", 
-"Let's write a few sentences in the file", 
+worldheight+'wads', 
 function (err) { 
 	if (err) { 
 	return console.error(err); 
