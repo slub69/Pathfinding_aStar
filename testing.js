@@ -1,26 +1,4 @@
-var fs = require("fs"); 
-console.log(" Writing into an file "); 
-worldheight = 100
-// Sample.txt is an empty file 
-fs.writeFile( 
-"sample.txt", 
-worldheight+'wads', 
-function (err) { 
-	if (err) { 
-	return console.error(err); 
-	} 
-
-	// If no error the remaining code executes 
-	console.log(" Finished writing "); 
-	console.log("Reading the data that's written"); 
-
-	// Reading the file 
-	fs.readFile("sample.txt", function (err, data) { 
-	if (err) { 
-		return console.error(err); 
-	} 
-	console.log("Data read : " + data.toString()); 
-		
-	}); 
-} 
-); 
+const fruits = "111111111111111111111101010000010000000001101010101110111111101101010100000101000001101010111111101011111101000001000001000001101111101010101111101100010001010100000101111011101110111011101101000100000100010001101110111111111110101100010000010000000101101011111010111111101101000001000101000101101111111111101010101101000000000001010001101011111110111011111100010000010001010001101111111011101010101100000000000100000101111111111111111111111"
+fruits.split(); 
+fruits.shift()
+console.log(fruits)

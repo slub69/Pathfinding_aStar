@@ -11,8 +11,8 @@
 #include <fstream>
 using namespace std;
 //----CONSTANTS-------------------------------------------------------
-#define GRID_WIDTH 10
-#define GRID_HEIGHT 10
+#define GRID_WIDTH 21
+#define GRID_HEIGHT 21
 #define NORTH 0
 #define EAST 1
 #define SOUTH 2

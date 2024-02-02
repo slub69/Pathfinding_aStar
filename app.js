@@ -26,7 +26,7 @@ let world = [[]] //generate a 2d array for the world
 
 let create = true //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
-let userMazeSelection = null
+let userMazeSelection = true //COME BACK HERE TO CHANGE TO NULL
 let autoPath = null
 let start = false
 let end = false
@@ -76,31 +76,41 @@ function readFromFile(){
         console.log("text in file: " + content)
         return content
     }
-    content = readFile()
-    for(let element=0;element<content.length;element++){
-        w.push(content[element])
-    }
-    content = w
-    j = []
-    k = []
-    for(let x=0;x<worldWidth;x++){
-        j.push(content[0])//makes a temp array j the first row of the maze
-        content.substr(0)
-    }
-    for(let i=0;i<worldHeight;i++){//set k to a 2d array with all the variables of content
-        k.push(j)
-    }
-    console.log(k)
-    content = k
-    for(let x=0; x< worldWidth;x++){ //make sure that every value of content is transfered into the game world
-        for(let y=0;y< worldHeight;y++){
-            world[x][y] = content[x][y]
+    let content = readFile()
+    content.then(
+        (onResolved) =>{
+        let contentArray = onResolved
+        contentArray.split('')
+        j = []
+        k = []
+        console.log("FRIST ELEMENT " + contentArray[1][1])
+        for(let x=0;x<worldWidth;x++){
+            j.push(contentArray[0][0])//makes a temp array j the first row of the maze
+            contentArray.shift()
         }
-    }
-    return world
+        console.log("J: " + j)
+        for(let i=0;i<worldHeight;i++){//set k to a 2d array with all the variables of content
+            k.push(j)
+        }
+        console.log(k)
+        contentArray = k
+        for(let x=0; x< worldWidth;x++){ //make sure that every value of content is transfered into the game world
+            for(let y=0;y< worldHeight;y++){
+                world[x][y] = contentArray[x][y]
+            }
+        }
+        return world
+        }
+        ,
+        (onRejected) => {
+            console.log("Failed to get maze.")
+        }
+    )
 }
 function writeToTxt(){
     console.log("Sending World Size...")
+    //writes value to a txt 
+    //MAKE SURE TO MAKE THE VALUE ODD TO ADD BORDERS
 }
 function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
