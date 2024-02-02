@@ -11,8 +11,8 @@
 #include <fstream>
 using namespace std;
 //----CONSTANTS-------------------------------------------------------
-#define GRID_WIDTH 79
-#define GRID_HEIGHT 23
+#define GRID_WIDTH 10
+#define GRID_HEIGHT 10
 #define NORTH 0
 #define EAST 1
 #define SOUTH 2
@@ -115,7 +115,7 @@ int main(){
     Visit(1,1); //start maze at 1,1
     PrintGrid(); //iterate through the array to draw it
 
-    std::ofstream outputFile("test.txt");
+    std::ofstream outputFile("output.txt");
     if(outputFile.is_open()){
         outputFile << grid;
         outputFile.close();

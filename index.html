@@ -41,8 +41,15 @@
               <div class='interaction ' id="pathClear">
                 <button type="button" id="pathClear" name="cursor_settings">Clear Path</button>
               </div>
-              <div class="interaction" id="random_btn">
-                <button type="button" id="random_btn" name="cursor_settings" id="random_btn">Randomize World</button>
+              <div class="worldstyle">
+                <div class='interaction ' id="random_btn">
+                  <input type="radio" id="random_btn" name="cursor_settings" value="start" />
+                  <label for="random_btn">Random World</label>
+                </div>
+                <div class='interaction ' id="maze_btn">
+                  <input type="radio" id="maze_btn" name="cursor_settings" value="end" />
+                  <label for="maze_btn">Maze</label>
+                </div>
               </div>
               <div class='interaction ' id="cornering">
                 <input type="checkbox" name="cursor_settings" id="corners">

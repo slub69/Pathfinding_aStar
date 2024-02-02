@@ -1,6 +1,7 @@
 const DOMselectors = {
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
+    mazeWorld: document.getElementById('maze_btn'),
     startWorld: document.getElementById('start_btn'),
     checkbox: document.getElementById('checkbox'),
     origin: document.getElementById('Origin'),
@@ -14,14 +15,7 @@ const DOMselectors = {
     inputHeight: document.getElementById('height'),
 }
 
-const readFile = async()=> {
-    let file = await fetch('test.txt')
-    let content = await file.text()
-    console.log(content)
-    return content
-}
 
-readFile()
 
 //start by defining all global variables as empty
 let canvas = null //define world, call it canvas
@@ -32,6 +26,7 @@ let world = [[]] //generate a 2d array for the world
 
 let create = true //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
+let userMazeSelection = null
 let autoPath = null
 let start = false
 let end = false
@@ -74,33 +69,38 @@ function loaded(){//function that lets user and code know that the image has bee
     referenceSheetloaded = true
     createWorld()//after the image has been connected the code continues to set up the world and run the rest of the code
 }
+function readFromFile(){
+    const readFile = async()=> {
+        let file = await fetch('/cpp/output.txt')
+        let content = await file.text()
+        console.log("text in file: " + content)
+        return content
+    }
+    content = readFile()
+    for(let element=0;element<content.length;element++){
+        w.push(content[element])
+    }
+    content = w
+    j = []
+    k = []
+    for(let x=0;x<worldWidth;x++){
+        j.push(content[0])//makes a temp array j the first row of the maze
+        content.substr(0)
+    }
+    for(let i=0;i<worldHeight;i++){//set k to a 2d array with all the variables of content
+        k.push(j)
+    }
+    console.log(k)
+    content = k
+    for(let x=0; x< worldWidth;x++){ //make sure that every value of content is transfered into the game world
+        for(let y=0;y< worldHeight;y++){
+            world[x][y] = content[x][y]
+        }
+    }
+    return world
+}
 function writeToTxt(){
-    let fs = require("fs"); 
-    console.log(" Writing into an file "); 
-
-// Sample.txt is an empty file 
-    fs.writeFile( 
-    "input.txt", 
-    worldWidth+'...'+worldHeight, 
-    function (err) { 
-	if (err) { 
-	return console.error(err); 
-	} 
-
-	// If no error the remaining code executes 
-	console.log(" Finished writing "); 
-	console.log("Reading the data that's written"); 
-
-	// Reading the file 
-	fs.readFile("input.txt", function (err, data) { 
-	if (err) { 
-		return console.error(err); 
-	} 
-	console.log("Data read : " + data.toString()); 
-	}); 
-} 
-); 
-
+    console.log("Sending World Size...")
 }
 function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
@@ -118,7 +118,11 @@ function createWorld(){
                     }
 	            }
             }
-    writeToTxt()
+    if(userMazeSelection){
+        writeToTxt()
+        readFromFile()
+    }
+    
     //at thispoint we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
    //start to find an intial path
@@ -947,6 +951,18 @@ DOMselectors.delete.addEventListener('click', function(e){
     console.log(e.target.checked)
     if(e.target.checked===true){
         userSelection = 0
+    }
+})
+DOMselectors.randomizeWorld.addEventListener('click', function(e){
+    console.log(e.target.checked)
+    if(e.target.checked===true){
+        userMazeSelection = false
+    }
+})
+DOMselectors.mazeWorld.addEventListener('click', function(e){
+    console.log(e.target.checked)
+    if(e.target.checked===true){
+        userMazeSelection = true
     }
 })
 DOMselectors.runSearch.addEventListener('click', async function(){
