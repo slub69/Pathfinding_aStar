@@ -24,7 +24,7 @@ let referenceSheet = null //call in reference for images
 let referenceSheetloaded = false //set a variable to give the status of the reference image
 let world = [[]] //generate a 2d array for the world
 
-let create = true //globalize variable for custom world or nah (originially used for start up but not used anymore)
+let create = null //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
 let userMazeSelection = true //COME BACK HERE TO CHANGE TO NULL
 let autoPath = null
@@ -69,50 +69,9 @@ function loaded(){//function that lets user and code know that the image has bee
     referenceSheetloaded = true
     createWorld()//after the image has been connected the code continues to set up the world and run the rest of the code
 }
-function readFromFile(){
-    const readFile = async()=> {
-        let file = await fetch('/cpp/output.txt')
-        let content = await file.text()
-        console.log("text in file: " + content)
-        return content
-    }
-    let content = readFile()
-    content.then(
-        (onResolved) =>{
-        let contentArray = onResolved
-        contentArray.split('')
-        j = []
-        k = []
-        console.log("FRIST ELEMENT " + contentArray[1][1])
-        for(let x=0;x<worldWidth;x++){
-            j.push(contentArray[0][0])//makes a temp array j the first row of the maze
-            contentArray.shift()
-        }
-        console.log("J: " + j)
-        for(let i=0;i<worldHeight;i++){//set k to a 2d array with all the variables of content
-            k.push(j)
-        }
-        console.log(k)
-        contentArray = k
-        for(let x=0; x< worldWidth;x++){ //make sure that every value of content is transfered into the game world
-            for(let y=0;y< worldHeight;y++){
-                world[x][y] = contentArray[x][y]
-            }
-        }
-        return world
-        }
-        ,
-        (onRejected) => {
-            console.log("Failed to get maze.")
-        }
-    )
-}
-function writeToTxt(){
-    console.log("Sending World Size...")
-    //writes value to a txt 
-    //MAKE SURE TO MAKE THE VALUE ODD TO ADD BORDERS
-}
-function createWorld(){
+
+
+async function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
     for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
             world[x] = []//set each element of world to be empty (creates an empty world)
@@ -120,22 +79,80 @@ function createWorld(){
                 world[x][y] = 0 // set the array inside the array to be empty
                 }
             }
-        if(create===true){
-            for (let x=0; x < worldWidth; x++){
-		         for (let y=0; y < worldHeight; y++){
-			        if (Math.random() > 0.75)
-			        world[x][y] = 1;
-                    }
-	            }
+    if(create){
+        console.log("Randomizing...")
+        for (let x=0; x < worldWidth; x++){
+	         for (let y=0; y < worldHeight; y++){
+		        if (Math.random() > 0.75)
+		        world[x][y] = 1;
             }
-    if(userMazeSelection){
+        }
+    }
+    if(userMazeSelection == true){
+        console.log("Generating Maze...")
         writeToTxt()
-        readFromFile()
+        await readFromFile()
     }
     
     //at thispoint we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
    generate()
    //start to find an intial path
+}
+async function writeToTxt(){
+    console.log("Sending World Size...")
+    let input = worldWidth + "..." + worldHeight
+    console.log("INPUT " + input)
+
+     
+
+    worldHeight++
+    worldWidth++
+    canvas.width = worldWidth * tileWidth //make the world as big as the number of piles in pixels
+    canvas.height = worldHeight * tileHeight //same as above but for height    
+
+    //writes value to a txt 
+    //MAKE SURE TO MAKE THE VALUE ODD TO ADD BORDERS
+}
+async function readFromFile(){
+    for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
+        world[x] = []//set each element of world to be empty (creates an empty world)
+        for(y=0;y<worldHeight;y++){//same thing as for world width but now for height so the world is 2d
+            world[x][y] = 0 // set the array inside the array to be empty
+            }
+        }
+    
+
+    let file = await fetch('/cpp/output.txt')
+    let content = await file.text()
+    console.log("text in file: " + content)
+
+    let contentString = content
+    let contentArray = []
+
+    for (let i = 0; i < contentString.length; i ++){
+        contentArray.push(contentString[i])
+    }
+    console.log(contentArray)
+    j = []
+    k = []
+    for(let i=0;i<worldHeight;i++){//set k to a 2d array with all the variables of content
+        for(let x=0;x<worldWidth;x++){
+            j.push(contentArray[0])//makes a temp array j the first row of the maze
+            contentArray.shift()
+        }
+        k.push(j)
+        j = []
+    }
+    array = k
+    for(let x=0; x< worldWidth;x++){ //make sure that every value of content is transfered into the game world
+        for(let y=0;y< worldHeight;y++){
+            if(array[x][y] == '1'){
+                world[x][y] = 1
+            } else if(array[x][y] == '0'){
+                world[x][y] = 0
+            }
+        }
+    }
 }
 function generate(){
     if(!referenceSheetloaded){ //if the reference sheet did not load then break b/c cannot draw
@@ -966,7 +983,7 @@ DOMselectors.delete.addEventListener('click', function(e){
 DOMselectors.randomizeWorld.addEventListener('click', function(e){
     console.log(e.target.checked)
     if(e.target.checked===true){
-        userMazeSelection = false
+        create = true
     }
 })
 DOMselectors.mazeWorld.addEventListener('click', function(e){
