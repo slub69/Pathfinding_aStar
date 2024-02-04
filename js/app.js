@@ -1,3 +1,4 @@
+import * as fs from 'fs'
 const DOMselectors = {
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
@@ -99,11 +100,11 @@ async function createWorld(){
    //start to find an intial path
 }
 async function writeToTxt(){
-    console.log("Sending World Size...")
+    console.log("Sendig World Size...")
     let input = worldWidth + "..." + worldHeight
     console.log("INPUT " + input)
 
-     
+    fs.writeFileSync('/js/input.txt', input)
 
     worldHeight++
     worldWidth++
