@@ -1,0 +1,14 @@
+{
+  "name": "astar-alogrithm-exploration",
+  "version": "1.0.0",
+  "description": "Pathfinding algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

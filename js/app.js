@@ -90,7 +90,7 @@ async function createWorld(){
     }
     if(userMazeSelection == true){
         console.log("Generating Maze...")
-        writeToTxt()
+        await restAPI()
         await readFromFile()
     }
     
@@ -98,21 +98,16 @@ async function createWorld(){
    generate()
    //start to find an intial path
 }
-async function writeToTxt(){
-    console.log("Sending World Size...")
-    let input = worldWidth + "..." + worldHeight
-    console.log("INPUT " + input)
-
-    websocket = new WebSocket("ws://localhost:")
-     
-
-    worldHeight++
-    worldWidth++
-    canvas.width = worldWidth * tileWidth //make the world as big as the number of piles in pixels
-    canvas.height = worldHeight * tileHeight //same as above but for height    
-
-    //writes value to a txt 
-    //MAKE SURE TO MAKE THE VALUE ODD TO ADD BORDERS
+async function restAPI(){
+    const express = require('express');
+    const app = express ()
+    app.use(express.json())
+    const PORT = process.env.PORT || 3000
+    app.listen(PORT, () => {
+        console.log("Server Listening on PORT:", port);
+      });
+    app.get("/status", (request, response));
+    
 }
 async function readFromFile(){
     for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
