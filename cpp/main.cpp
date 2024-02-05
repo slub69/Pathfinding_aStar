@@ -18,11 +18,7 @@ using namespace std;
 #define SOUTH 2
 #define WEST 3
 //----GLOBAL VARIABLES------------------------------------------------
-/* int GRID_WIDTH, GRID_HEIGHT;
-std::ofstream inputFile("size.txt");
-if(inputFile.isopen()){
-    GRID_WIDTH >> 
-} */
+
 
 char grid[GRID_WIDTH*GRID_HEIGHT];
 //----FUNCTION PROTOTYPES---------------------------------------------

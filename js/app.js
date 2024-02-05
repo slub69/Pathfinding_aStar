@@ -103,6 +103,7 @@ async function writeToTxt(){
     let input = worldWidth + "..." + worldHeight
     console.log("INPUT " + input)
 
+    websocket = new WebSocket("ws://localhost:")
      
 
     worldHeight++
