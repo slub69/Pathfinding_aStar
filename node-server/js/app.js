@@ -1,4 +1,5 @@
-import * as fs from 'fs'
+import fs from 'fs'
+
 const DOMselectors = {
     runSearch: document.getElementById('run_btn'),
     randomizeWorld: document.getElementById('random_btn'),
@@ -74,9 +75,9 @@ function loaded(){//function that lets user and code know that the image has bee
 
 async function createWorld(){
     console.log('Loading world...\n\n')//lets the user know that the next function has been started
-    for(x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
+    for(let x=0;x<worldWidth;x++){//for loop to loop through the size of the world and generate all of it
             world[x] = []//set each element of world to be empty (creates an empty world)
-            for(y=0;y<worldHeight;y++){//same thing as for world width but now for height so the world is 2d
+            for(let y=0;y<worldHeight;y++){//same thing as for world width but now for height so the world is 2d
                 world[x][y] = 0 // set the array inside the array to be empty
                 }
             }
@@ -104,8 +105,7 @@ async function writeToTxt(){
     let input = worldWidth + "..." + worldHeight
     console.log("INPUT " + input)
 
-    fs.writeFileSync('/js/input.txt', input)
-
+    /*   */
     worldHeight++
     worldWidth++
     canvas.width = worldWidth * tileWidth //make the world as big as the number of piles in pixels
