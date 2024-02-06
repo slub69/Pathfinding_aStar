@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const app = express()
 var cors = require('cors')
-const port = 3000
+const port = 3001
 
 const { spawn } = require('node:child_process');
 

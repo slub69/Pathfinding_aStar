@@ -26,7 +26,7 @@ let world = [[]] //generate a 2d array for the world
 
 let create = null //globalize variable for custom world or nah (originially used for start up but not used anymore)
 let userSelection = null //globalize variable for which point the user has selected
-let userMazeSelection = true //COME BACK HERE TO CHANGE TO NULL
+let userMazeSelection = null //COME BACK HERE TO CHANGE TO NULL
 let autoPath = null
 let start = false
 let end = false
@@ -83,18 +83,24 @@ async function createWorld(){
         console.log("Randomizing...")
         for (let x=0; x < worldWidth; x++){
 	         for (let y=0; y < worldHeight; y++){
-		        if (Math.random() > 0.75)
-		        world[x][y] = 1;
+		        if (Math.random() > 0.75){
+		            world[x][y] = 1;
+                } else{
+                    world[x][y] = 0;
+                }
             }
         }
+        generate()
     }
-    if(userMazeSelection == true){
+    if(userMazeSelection){
         console.log("Generating Maze...")
         await readFromFile()
+        generate()
+
     }
     
     //at thispoint we have defined an empty world by defining the world as an array nested inside an array, the arrays are full of 0 representing each node value
-   generate()
+   
    //start to find an intial path
 }
 
@@ -110,8 +116,9 @@ async function readFromFile(){
             }
         }
     
+    
 
-    let file = await fetch(`http://localhost:3000/generate_map?width=${worldWidth}&length=${worldHeight}`)
+    let file = await fetch(`http://localhost:3001/generate_map?width=${worldWidth}&length=${worldHeight}`)
     let content = await file.text()
     console.log("text in file: " + content)
 
@@ -141,7 +148,7 @@ async function readFromFile(){
             } else if(array[x][y] == '0'){
                 world[x][y] = 0
             } */
-        
+       
     
 }
 function generate(){
@@ -975,12 +982,18 @@ DOMselectors.delete.addEventListener('click', function(e){
 DOMselectors.randomizeWorld.addEventListener('click', function(e){
     console.log(e.target.checked)
     if(e.target.checked===true){
+        worldHeight--
+        worldWidth--
+        canvas.width = worldWidth * tileWidth //make the world as big as the number of piles in pixels
+        canvas.height = worldHeight * tileHeight //same as above but for height   
+        userMazeSelection = false
         create = true
     }
 })
 DOMselectors.mazeWorld.addEventListener('click', function(e){
     console.log(e.target.checked)
     if(e.target.checked===true){
+        create = false
         userMazeSelection = true
     }
 })
