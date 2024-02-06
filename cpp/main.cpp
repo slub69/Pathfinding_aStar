@@ -9,18 +9,22 @@
 //=============================================================================
 #include <iostream>
 #include <fstream>
+#include <vector>
 using namespace std;
 //----CONSTANTS-------------------------------------------------------
-#define GRID_WIDTH 21
-#define GRID_HEIGHT 21
+
+
 #define NORTH 0
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
 //----GLOBAL VARIABLES------------------------------------------------
+int GRID_WIDTH=0;
+int GRID_HEIGHT=0;
+int gridSize = 0;
 
+std::vector<int> grid(0);
 
-char grid[GRID_WIDTH*GRID_HEIGHT];
 //----FUNCTION PROTOTYPES---------------------------------------------
 void ResetGrid();
 int XYToIndex( int x, int y );
@@ -97,27 +101,51 @@ void Visit( int x, int y ){
 }
 void PrintGrid(){
     // Displays the finished maze to the screen.
-    for (int y=0; y<GRID_HEIGHT; ++y){
+/*     for( int y = 0; y < GRID_HEIGHT; ++y){
+        for(int x = 0;x<GRID_WIDTH;++x){
+            switch(grid[x][y]){
+                case 49:
+                    grid[x][y]
+            }
+        }
+    } */
+  for (int x : grid) {
+    switch(x){
+        case 49:
+            x = 1;
+            break;
+        case 48:
+            x = 0;
+            break;
+    }
+    std::cout << x;
+  }
+
+/*    std::cout << std::endl;
+      for (int y=0; y< GRID_HEIGHT; ++y){
         for (int x=0; x<GRID_WIDTH; ++x){
+            switch(grid[y][x]){
+                case 49:
+                    grid[y][x] = 
+            }
             cout << grid[XYToIndex(x,y)];
         }
         cout << endl;
-    }
+    } */
 }
-int main(){
+
+int main(int argc, char** argv) {
+
+    GRID_WIDTH = stoi(argv[1]);
+    GRID_HEIGHT = stoi(argv[2]);
+    gridSize = GRID_WIDTH * GRID_HEIGHT;
+    grid.resize(gridSize);
+
     // Starting point and top-level control.
     srand( time(0) ); //give random number value based on time on the pc (makes sure every maze is unique)
     ResetGrid(); //clear grid and set it for all 1s
     Visit(1,1); //start maze at 1,1
     PrintGrid(); //iterate through the array to draw it
-
-    std::ofstream outputFile("output.txt");
-    if(outputFile.is_open()){
-        outputFile << grid;
-        outputFile.close();
-        std::cout << "File written to..." << std::endl;
-    } else{
-        std::cout << "File failed to load...";
-    }
     return 0;
+
 }
