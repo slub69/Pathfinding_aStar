@@ -126,8 +126,8 @@ async function readFromFile(){
     k = []
     
 
-    for(let x=0;x<worldHeight;x++){//set k to a 2d array with all the variables of content
-        for(let y=0;y<worldWidth;y++){
+    for(let x=0;x<worldWidth;x++){//set k to a 2d array with all the variables of content
+        for(let y=0;y<worldHeight;y++){
             j.push(contentArray[0])//makes a temp array j the first row of the maze
             contentArray.shift()
         }
